@@ -1,0 +1,2663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#09090f">
+    <title>Лесные Дали & Глобус — Система учета (PRO Neon Edition)</title>
+    <style>
+        :root {
+            --bg: #0b1117; --surface: #141e28; --surface-subtle: #1a2735;
+            --primary: #10b981; --primary-hover: #059669;
+            --bar-color: #c084fc; --bar-hover: #a855f7;
+            --rec-color: #38bdf8; --rec-hover: #0284c7;
+            --accent: #f59e0b; --danger: #ef4444; --success: #22c55e; --blue: #3b82f6;
+            --text: #f1f5f9; --text-muted: #94a3b8; --border: #233346;
+            --card-shadow: 0 4px 25px rgba(0, 0, 0, 0.45);
+            --header-glass: rgba(15, 23, 42, 0.94); --bar-glass: rgba(30, 10, 50, 0.94); --rec-glass: rgba(7, 45, 75, 0.95);
+            --font-size-base: 13px; --table-pad-y: 8px; --table-pad-x: 6px;
+            --neon-primary: 0 0 12px rgba(16, 185, 129, 0.45), 0 0 25px rgba(16, 185, 129, 0.2);
+            --neon-bar: 0 0 14px rgba(192, 132, 252, 0.45), 0 0 28px rgba(192, 132, 252, 0.2);
+            --neon-rec: 0 0 14px rgba(56, 189, 248, 0.45), 0 0 28px rgba(56, 189, 248, 0.2);
+            --neon-danger: 0 0 12px rgba(239, 68, 68, 0.45);
+            --neon-border: 1px solid rgba(192, 132, 252, 0.35);
+        }
+
+        [data-theme="light"] {
+            --bg: #f1f5f2; --surface: #ffffff; --surface-subtle: #f8faf9;
+            --primary: #1b4332; --primary-hover: #143225;
+            --bar-color: #6b21a8; --bar-hover: #581c87;
+            --rec-color: #0284c7; --rec-hover: #0369a1;
+            --accent: #d97706; --danger: #dc2626; --success: #16a34a; --blue: #2563eb;
+            --text: #0f172a; --text-muted: #64748b; --border: #dbe3dc;
+            --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+            --header-glass: rgba(27, 67, 50, 0.94); --bar-glass: rgba(59, 7, 100, 0.94); --rec-glass: rgba(2, 132, 199, 0.94);
+            --neon-primary: none; --neon-bar: none; --neon-rec: none; --neon-danger: none; --neon-border: 1px solid var(--border);
+        }
+
+        [data-theme="midnight"] {
+            --bg: #06060c; --surface: #10101c; --surface-subtle: #18182b;
+            --primary: #c084fc; --primary-hover: #a855f7;
+            --bar-color: #a855f7; --bar-hover: #9333ea;
+            --rec-color: #38bdf8; --rec-hover: #0284c7;
+            --accent: #fbbf24; --danger: #f43f5e; --success: #34d399; --blue: #38bdf8;
+            --text: #fafafa; --text-muted: #a1a1aa; --border: #282845;
+            --card-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+            --header-glass: rgba(14, 14, 26, 0.95); --bar-glass: rgba(36, 10, 68, 0.95); --rec-glass: rgba(6, 40, 70, 0.95);
+            --neon-primary: 0 0 16px rgba(192, 132, 252, 0.55), 0 0 32px rgba(192, 132, 252, 0.25);
+            --neon-bar: 0 0 16px rgba(168, 85, 247, 0.55), 0 0 32px rgba(168, 85, 247, 0.25);
+            --neon-rec: 0 0 16px rgba(56, 189, 248, 0.55), 0 0 32px rgba(56, 189, 248, 0.25);
+            --neon-danger: 0 0 16px rgba(244, 63, 94, 0.55);
+            --neon-border: 1px solid rgba(168, 85, 247, 0.5);
+        }
+
+        [data-font-scale="large"] { --font-size-base: 15px; --table-pad-y: 11px; --table-pad-x: 8px; }
+        [data-density="compact"] { --table-pad-y: 5px; --table-pad-x: 4px; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 96px; font-size: var(--font-size-base); transition: background 0.25s, color 0.25s; }
+        .hidden { display: none !important; }
+
+        #toastBox {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.96); color: #fff; padding: 12px 22px; border-radius: 16px;
+            font-size: 13.5px; font-weight: 700; z-index: 4000; box-shadow: 0 12px 35px rgba(0,0,0,0.45);
+            max-width: 92%; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.18);
+        }
+        #liveAnnouncementBox {
+            background: rgba(220, 38, 38, 0.15); border-left: 4px solid var(--danger);
+            color: var(--danger); padding: 12px 16px; margin: 12px 12px 0 12px; border-radius: 12px;
+            font-weight: 800; font-size: 13.5px; display: flex; align-items: center; gap: 10px;
+            box-shadow: var(--neon-danger); border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        #authScreen {
+            position: fixed; inset: 0; background: radial-gradient(circle at top right, #1b4332, #071510);
+            display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 1000; overflow-y: auto;
+        }
+        .auth-card { background: var(--surface); width: 100%; max-width: 420px; border-radius: 24px; padding: 26px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); border: 1px solid var(--border); }
+        .auth-logo { text-align: center; margin-bottom: 18px; }
+        .auth-logo-badge {
+            width: 95px; height: 95px; margin: 0 auto 12px; border-radius: 50%;
+            overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.35), 0 0 0 3px rgba(217, 119, 6, 0.45);
+            background: #1b4332; display: flex; align-items: center; justify-content: center;
+        }
+        .auth-logo-badge svg { width: 85%; height: 85%; }
+        .auth-logo h1 { font-size: 20px; color: var(--primary); font-weight: 800; }
+        .auth-logo p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .auth-tabs { display: flex; background: var(--surface-subtle); border-radius: 12px; padding: 4px; margin-bottom: 18px; border: 1px solid var(--border); }
+        .auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 700; border-radius: 9px; cursor: pointer; color: var(--text-muted); border: none; background: transparent; transition: all 0.2s; }
+        .auth-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+        header {
+            background: var(--header-glass); color: #fff; padding: 11px 16px; position: sticky; top: 0; z-index: 50;
+            display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+            gap: 10px; flex-wrap: wrap; backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.08); transition: background 0.3s;
+        }
+        header.bar-mode { background: var(--bar-glass); border-bottom: 1px solid rgba(168, 85, 247, 0.3); }
+        header.reception-mode { background: var(--rec-glass); border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+        .header-title-wrap { display: flex; align-items: center; gap: 9px; }
+        .header-mini-logo { width: 34px; height: 34px; border-radius: 50%; background: #1b4332; border: 2px solid rgba(255,255,255,0.45); display: flex; align-items: center; justify-content: center; }
+        .header-mini-logo svg { width: 80%; height: 80%; }
+        .header-title h2 { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 7px; }
+        .header-title span { font-size: 11px; opacity: 0.9; display: block; margin-top: 2px; }
+        .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: #fbbf24; }
+        .dot.online { background: #34d399; box-shadow: 0 0 10px #34d399; }
+        .header-actions { display: flex; align-items: center; gap: 6px; }
+        .btn-theme-top { background: rgba(255,255,255,0.15); border: none; color: #fff; padding: 6px 11px; border-radius: 12px; font-size: 11.5px; font-weight: 700; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; }
+        .btn-theme-top:hover { background: rgba(255,255,255,0.25); box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+        .user-pill { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.14); padding: 5px 10px; border-radius: 16px; font-size: 12px; }
+        .role-badge { color: #fff; padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .logout-btn { background: none; border: none; color: #fca5a5; font-size: 12px; font-weight: 700; cursor: pointer; margin-left: 4px; }
+
+        .container { max-width: 1180px; margin: 0 auto; padding: 12px; }
+        .dept-switcher { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--surface); padding: 5px; border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: var(--card-shadow); }
+        .dept-btn { padding: 12px 10px; border: none; border-radius: 12px; font-size: 13.5px; font-weight: 800; cursor: pointer; background: transparent; color: var(--text-muted); text-align: center; transition: all 0.25s; }
+        .dept-btn.active-dishes { background: var(--primary); color: #fff; box-shadow: var(--neon-primary); }
+        .dept-btn.active-bar { background: var(--bar-color); color: #fff; box-shadow: var(--neon-bar); }
+        .dept-btn.active-reception { background: var(--rec-color); color: #fff; box-shadow: var(--neon-rec); }
+
+        .date-bar-box, .dishes-meta-box { background: var(--surface); padding: 14px; border-radius: 16px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; box-shadow: var(--card-shadow); border: 1px solid var(--border); }
+        .date-nav-row { display: flex; gap: 4px; align-items: center; }
+        .btn-date-step { padding: 8px 12px; border: 1px solid var(--bar-color); background: var(--surface-subtle); color: var(--bar-color); border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+        .btn-date-step:hover { background: var(--bar-color); color: #fff; box-shadow: var(--neon-bar); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+        @media(min-width: 680px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-card { background: var(--surface); padding: 14px; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--card-shadow); position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .stat-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--primary); }
+        .stat-card.guest::before { background: var(--blue); }
+        .stat-card.month-rev::before { background: var(--success); }
+        .stat-card.loss::before { background: var(--danger); }
+        .stat-card small { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; }
+        .stat-card strong { font-size: 18px; color: var(--text); margin-top: 5px; display: block; font-weight: 800; }
+
+        .panel { display: none; background: var(--surface); padding: 16px; border-radius: 18px; border: 1px solid var(--border); margin-bottom: 14px; box-shadow: var(--card-shadow); }
+        .panel.active { display: block; animation: fadeIn 0.25s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); gap: 8px; flex-wrap: wrap; }
+        .panel-header h3 { font-size: 16px; font-weight: 800; color: var(--text); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 14px; }
+        @media(min-width: 600px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13.5px; background: var(--surface-subtle); color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: var(--neon-primary); }
+
+        .btn { width: 100%; padding: 13px; border: none; border-radius: 12px; background: var(--primary); color: #fff; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: var(--neon-primary); }
+        .btn-bar { background: var(--bar-color); box-shadow: var(--neon-bar); }
+        .btn-rec { background: var(--rec-color); box-shadow: var(--neon-rec); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        .btn-sm { padding: 6px 11px; font-size: 11.5px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; margin: 2px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
+        .btn-sm:hover { opacity: 0.85; transform: scale(1.02); }
+        .btn-edit { background: rgba(37,99,235,0.2); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.4); }
+        .btn-del { background: rgba(220,38,38,0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.4); }
+        .btn-add { background: rgba(22,163,74,0.2); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.4); }
+        .btn-warn { background: rgba(217,119,6,0.2); color: var(--accent); border: 1px solid rgba(245, 158, 11, 0.4); }
+        .btn-word { background: #1e40af; color: #fff; }
+        .btn-print { background: #047857; color: #fff; }
+        .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+        .btn-active-danger { background: var(--danger) !important; color: #fff !important; border-color: var(--danger) !important; box-shadow: var(--neon-danger); }
+
+        .filters { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        .search-wrap { position: relative; flex: 2; min-width: 150px; }
+        .search-wrap input { width: 100%; padding: 10px 32px 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface-subtle); color: var(--text); transition: box-shadow 0.2s; }
+        .search-wrap input:focus { box-shadow: var(--neon-primary); border-color: var(--primary); outline: none; }
+        .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; display: none; font-size: 14px; font-weight: 800; }
+        .filters select { flex: 1; min-width: 130px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface-subtle); color: var(--text); }
+
+        .category-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; }
+        .cat-chip { padding: 5px 12px; border-radius: 16px; background: var(--surface-subtle); border: 1px solid var(--border); font-size: 11.5px; font-weight: 700; color: var(--text-muted); white-space: nowrap; cursor: pointer; transition: all 0.2s; }
+        .cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: var(--neon-primary); }
+
+        .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; max-height: 70vh; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--font-size-base); }
+        th, td { padding: var(--table-pad-y) var(--table-pad-x); text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { background: var(--surface-subtle); font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
+        .cat-row td { background: var(--surface-subtle); color: var(--primary); font-weight: 800; font-size: 12px; text-transform: uppercase; padding: 8px; border-top: 2px solid var(--border); }
+        .cell-input { width: 62px; padding: 6px 2px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-weight: 800; text-align: center; background: var(--surface); color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; }
+        .cell-input:focus { border-color: var(--primary); outline: none; box-shadow: var(--neon-primary); }
+        .exp-note-input { width: 95px; padding: 4px 5px; border: 1px dashed var(--danger); border-radius: 6px; font-size: 11px; margin-top: 3px; display: block; background: rgba(220,38,38,0.06); color: var(--danger); }
+
+        .badge { padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; }
+        .b-ok { background: rgba(22,163,74,0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .b-warn { background: rgba(220,38,38,0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .b-in { background: rgba(22,163,74,0.15); color: var(--success); }
+        .b-move { background: rgba(37,99,235,0.15); color: var(--blue); }
+        .b-loss { background: rgba(217,119,6,0.15); color: var(--accent); }
+        .b-sale { background: rgba(147,51,234,0.15); color: #9333ea; }
+
+        .cloud-meter { background: var(--surface-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 14px; }
+        .cloud-bar-bg { width: 100%; height: 7px; background: var(--border); border-radius: 6px; overflow: hidden; margin-top: 7px; }
+        .cloud-bar-fill { height: 100%; background: var(--success); width: 1%; box-shadow: 0 0 10px var(--success); transition: width 0.3s; }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface);
+            border-top: 1px solid var(--border); display: flex; justify-content: space-around;
+            padding: 6px 4px; z-index: 50; box-shadow: 0 -4px 25px rgba(0,0,0,0.3);
+        }
+        .nav-item { flex: 1; text-align: center; padding: 7px 2px; border: none; background: none; font-size: 11px; font-weight: 700; color: var(--text-muted); cursor: pointer; border-radius: 10px; transition: all 0.2s; }
+        .nav-item.active { color: var(--primary); background: rgba(27,67,50,0.12); box-shadow: inset 0 0 8px rgba(16, 185, 129, 0.2); }
+        .nav-icon { font-size: 17px; display: block; margin-bottom: 2px; }
+
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 2000; backdrop-filter: blur(4px); }
+        .modal-window { background: var(--surface); width: 100%; max-width: 470px; border-radius: 22px; padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); }
+        .modal-window h3 { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+        .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+        .theme-btn { border: 2px solid var(--border); border-radius: 12px; padding: 12px 6px; text-align: center; cursor: pointer; background: var(--surface-subtle); color: var(--text); font-size: 12px; font-weight: 700; transition: all 0.2s; }
+        .theme-btn.active { border-color: var(--primary); box-shadow: var(--neon-primary); }
+        .theme-swatch { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 6px; }
+    </style>
+</head>
+<body>
+
+<div id="toastBox" class="hidden">Уведомление</div>
+
+<div id="authScreen">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <div class="auth-logo-badge">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="46" fill="#1b4332" stroke="#d97706" stroke-width="3"/>
+                    <path d="M50 82 V48 M50 56 Q35 45 28 35 Q40 32 50 48 M50 52 Q65 42 72 32 Q60 30 50 45 M50 42 Q38 28 34 18 Q46 18 50 35 M50 38 Q62 25 66 15 Q54 15 50 32 M50 28 Q44 14 50 6 Q56 14 50 28" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    <path d="M22 82 Q50 72 78 82" stroke="#d97706" stroke-width="4" fill="none"/>
+                </svg>
+            </div>
+            <h1>ЛЕСНЫЕ ДАЛИ • ГЛОБУС</h1>
+            <p>Централизованная система учета бара, посуды и ресепшена</p>
+        </div>
+        <div class="auth-tabs">
+            <button type="button" class="auth-tab active" id="tabBtnLogin" onclick="switchAuth('login')">Вход</button>
+            <button type="button" class="auth-tab" id="tabBtnReg" onclick="switchAuth('register')">Регистрация</button>
+        </div>
+
+        <div id="loginBox">
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label>Выберите сотрудника</label>
+                <select id="loginUserSelect"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>Личный ПИН-код / Пароль</label>
+                <input type="password" id="loginPin" placeholder="Введите ваш ПИН-код" inputmode="numeric">
+            </div>
+            <button type="button" class="btn" onclick="doLogin()">Войти в систему</button>
+            <div style="text-align:center; margin-top:14px; font-size:12px; font-weight:700; color:var(--blue); cursor:pointer; text-decoration:underline;" onclick="openRecoverModal()">
+                📱 Забыли ПИН-код? Восстановить по телефону
+            </div>
+        </div>
+
+        <div id="regBox" class="hidden">
+            <div class="form-group" style="margin-bottom: 10px;"><label>ФИО сотрудника</label><input type="text" id="regName" placeholder="Фамилия И.О."></div>
+            <div class="form-group" style="margin-bottom: 10px;"><label>📱 Ваш телефон</label><input type="tel" id="regPhone" placeholder="+79990000000"></div>
+            <div class="form-group" style="margin-bottom: 10px;"><label>Должность</label><select id="regRole"></select></div>
+            <div class="form-group" style="margin-bottom: 10px;"><label>Локация</label><select id="regHall"></select></div>
+            <div class="form-group" style="margin-bottom: 14px;"><label>ПИН-код (Пароль)</label><input type="password" id="regPin" placeholder="Минимум 4 цифры" inputmode="numeric"></div>
+            <button type="button" class="btn" onclick="doRegister()">Зарегистрироваться и войти</button>
+        </div>
+    </div>
+</div>
+
+<header id="mainHeader">
+    <div class="header-title-wrap">
+        <div class="header-mini-logo">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="46" fill="#1b4332" stroke="#d97706" stroke-width="3"/>
+                <path d="M50 82 V48 M50 56 Q35 45 28 35 Q40 32 50 48 M50 52 Q65 42 72 32 Q60 30 50 45 M50 42 Q38 28 34 18 Q46 18 50 35 M50 38 Q62 25 66 15 Q54 15 50 32 M50 28 Q44 14 50 6 Q56 14 50 28" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" fill="none"/>
+            </svg>
+        </div>
+        <div class="header-title">
+            <h2><span id="cloudDot" class="dot online"></span> Лесные Дали & Глобус</h2>
+            <span id="cloudSubText">Облако активно • Занято: <b id="hdrCloudSize">0 КБ</b></span>
+        </div>
+    </div>
+    <div class="header-actions">
+        <button type="button" class="btn-theme-top hidden" id="btnSettingsTop" onclick="openSystemSettingsModal()">⚙️ Настройки</button>
+        <button type="button" class="btn-theme-top" onclick="openThemeModal()">🎨 Вид</button>
+        <div class="user-pill">
+            <div>
+                <strong id="uiUserName">Пользователь</strong>
+                <span id="uiUserRole" class="role-badge" style="background:#b91c1c">РОЛЬ</span>
+            </div>
+            <button type="button" class="logout-btn" onclick="doLogout()">Выйти</button>
+        </div>
+    </div>
+</header>
+
+<div id="liveAnnouncementBox" class="hidden">
+    <span style="font-size:18px;">📢</span>
+    <span id="liveAnnounceText"></span>
+</div>
+
+<div class="container">
+    <div class="dept-switcher" id="deptSwitcherBox">
+        <button type="button" id="btnDeptDishes" class="dept-btn" onclick="switchDepartment('DISHES')">🍽 Посуда</button>
+        <button type="button" id="btnDeptBar" class="dept-btn active-bar" onclick="switchDepartment('BAR')">🍸 Бар</button>
+        <button type="button" id="btnDeptReception" class="dept-btn" onclick="switchDepartment('RECEPTION')">🏨 Ресепшен</button>
+    </div>
+
+    <!-- КАЛЕНДАРЬ И ПАРАМЕТРЫ ДНЯ -->
+    <div id="barDateBox" class="date-bar-box">
+        <div>
+            <label style="font-size:11px; font-weight:700; color:var(--bar-color); display:block; margin-bottom:4px;" id="lblDateBoxTitle">📅 Дата ревизии:</label>
+            <div class="date-nav-row">
+                <button type="button" class="btn-date-step" onclick="stepBarDate(-1)">◀</button>
+                <input type="date" id="activeDateInput" style="flex:1; padding:7px; border:2px solid var(--bar-color); border-radius:8px; font-weight:800; font-size:13px; background:var(--surface); color:var(--text);" onchange="onBarDateChange(this.value)">
+                <button type="button" class="btn-date-step" onclick="stepBarDate(1)">▶</button>
+                <button type="button" class="btn-date-step" onclick="goTodayBarDate()">Сегодня</button>
+            </div>
+        </div>
+        <div>
+            <label style="font-size:11px; font-weight:700; color:var(--bar-color); display:block; margin-bottom:4px;" id="lblAuthorTitle">✍️ Ответственный смены (обязательно):</label>
+            <input type="text" id="barAuthorInput" placeholder="Введите ФИО ответственного" style="width:100%; padding:8px; border:1px solid var(--bar-color); border-radius:8px; font-size:13px; background:var(--surface); color:var(--text);" oninput="onBarMetaInput(false)" onchange="onBarMetaInput(true)">
+        </div>
+        <div>
+            <label style="font-size:11px; font-weight:700; color:var(--bar-color); display:block; margin-bottom:4px;">✒️ Проверил (Руководство, обязательно):</label>
+            <input type="text" id="barManagerInput" placeholder="Введите проверяющего" style="width:100%; padding:8px; border:1px solid var(--bar-color); border-radius:8px; font-size:13px; background:var(--surface); color:var(--text);" oninput="onBarMetaInput(false)" onchange="onBarMetaInput(true)">
+        </div>
+        <div style="display:flex; flex-direction:column; justify-content:flex-end; gap:5px;">
+            <div style="display:flex; gap:4px;">
+                <button type="button" class="btn-sm btn-bar" style="flex:1; padding:8px; color:#fff;" onclick="saveBarDayManual()">💾 Сохранить день</button>
+                <button type="button" class="btn-sm btn-edit" id="btnCarryOver" style="padding:8px;" onclick="carryOverFromPrevDay()">🔄 Перенести</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МЕТА ПОСУДЫ -->
+    <div id="dishesMetaBox" class="dishes-meta-box hidden">
+        <div>
+            <label style="font-size:11px; font-weight:700; color:var(--primary); display:block; margin-bottom:4px;">📅 Дата ревизии посуды:</label>
+            <input type="date" id="dishesDateInput" style="width:100%; padding:8px; border:1px solid #86efac; border-radius:8px; font-weight:700; font-size:13px; background:var(--surface); color:var(--text);" onchange="onDishesMetaChange(false)">
+        </div>
+        <div>
+            <label style="font-size:11px; font-weight:700; color:var(--primary); display:block; margin-bottom:4px;">👤 Кто составлял:</label>
+            <input type="text" id="dishesAuthorInput" placeholder="ФИО сотрудника" style="width:100%; padding:8px; border:1px solid #86efac; border-radius:8px; font-size:13px; background:var(--surface); color:var(--text);" oninput="onDishesMetaInput(false)" onchange="onDishesMetaInput(true)">
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+            <button type="button" class="btn-sm btn-add" style="width:100%; padding:9px;" onclick="onDishesMetaChange(true)">💾 Зафиксировать посуду</button>
+        </div>
+    </div>
+
+    <!-- СВОДНЫЕ КАРТОЧКИ -->
+    <div class="stats-grid">
+        <div class="stat-card"><small id="lblStat1">Позиций в ревизии</small><strong id="stTotalItems">0 ед.</strong></div>
+        <div class="stat-card guest" id="cardDaySales"><small id="lblStat2">Продажи за день</small><strong id="stDaySales">0 ₽</strong></div>
+        <div class="stat-card month-rev" id="cardMonthSales"><small id="lblStat3">Продажи за месяц</small><strong id="stMonthSales">0 ₽</strong></div>
+        <div class="stat-card loss"><small id="lblStat4">Списано просрочки</small><strong id="stStaffLoss">0 ₽</strong></div>
+    </div>
+
+    <!-- ВКЛАДКА 1: ТАБЛИЦА РЕВИЗИИ -->
+    <div id="tab-stock" class="panel active">
+        <div class="panel-header">
+            <h3 id="stockPanelTitle">🍸 Ревизия и прайс</h3>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn-sm btn-print" onclick="printCurrentDepartmentTable()">🖨 Печать ведомости за день</button>
+                <button type="button" class="btn-sm btn-add" id="btnAddTop" onclick="openItemModal(null)">➕ Добавить товар</button>
+                <button type="button" class="btn-sm btn-edit" id="btnLocModalTop" onclick="openLocationsModal()">📍 Локации</button>
+                <button type="button" class="btn-sm btn-edit" id="btnCatModalTop" onclick="openCategoriesModal()">🏷 Категории</button>
+                <button type="button" class="btn-sm btn-edit" onclick="syncFromCloud(true)">🔄 Обновить</button>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="search-wrap">
+                <input type="text" id="searchBox" placeholder="🔍 Поиск позиции..." oninput="onSearchInput(this.value)">
+                <button type="button" id="searchClearBtn" class="search-clear" onclick="clearSearch()">✕</button>
+            </div>
+            <select id="filterLoc" onchange="renderStock()"></select>
+            <select id="filterCat" onchange="onFilterCatSelect(this.value)"></select>
+            <button type="button" id="btnFilterZero" class="btn-outline" style="border-radius:10px; font-size:12px; padding:10px 12px; font-weight:700;" onclick="toggleZeroFilter()">⚠️ Закончилось</button>
+            <button type="button" id="btnFilterExp" class="btn-outline" style="border-radius:10px; font-size:12px; padding:10px 12px; font-weight:700;" onclick="toggleExpFilter()">⏳ Сроки партий</button>
+        </div>
+
+        <div id="categoryChipsWrap" class="category-chips"></div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr id="tableHeaderRow"></tr></thead>
+                <tbody id="stockBody"></tbody>
+            </table>
+        </div>
+
+        <div id="expiredSummaryBox" style="margin-top:14px; background:rgba(220,38,38,0.06); border:1px solid rgba(220,38,38,0.25); border-radius:14px; padding:12px; box-shadow: var(--neon-danger);">
+            <h4 style="font-size:13px; color:var(--danger); margin-bottom:6px;">⚠️ Мониторинг сроков годности и списаний за <span id="lblExpDate"></span>:</h4>
+            <div id="expiredDayList" style="font-size:12px; color:var(--text);"></div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 2: ОПЕРАЦИИ -->
+    <div id="tab-ops" class="panel">
+        <div class="panel-header"><h3 id="opsPanelTitle">Провести операцию / списание</h3></div>
+        <div id="opsNoPermWarn" class="hidden" style="background:rgba(220,38,38,0.12); color:var(--danger); padding:12px; border-radius:10px; font-size:13px; margin-bottom:12px; font-weight:600;">
+            Для вашей должности проведение операций отключено.
+        </div>
+        <div id="opsFormWrap">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label id="lblOpDeptSelectTitle">Выберите позицию (только текущий отдел)</label>
+                    <div class="search-wrap" style="margin-bottom:6px;">
+                        <input type="text" id="opSearchInput" placeholder="🔍 Быстрый поиск товара или услуги..." oninput="filterOpItemsDropdown()">
+                        <button type="button" id="opSearchClearBtn" class="search-clear" onclick="clearOpSearch()">✕</button>
+                    </div>
+                    <select id="opItemSelect" onchange="updateUnitModeOptions()"></select>
+                </div>
+                <div class="form-group"><label>Тип операции / Причина</label><select id="opTypeSelect" onchange="updateOpFields()"></select></div>
+                <div class="form-group" id="unitModeGroup">
+                    <label>Как считать количество?</label>
+                    <select id="opUnitMode" onchange="updateUnitModeHint()">
+                        <option value="PORTION_ML">Порциями в миллилитрах (50 / 100 / 150 мл)</option>
+                        <option value="BOTTLE">Целыми бутылками / шт. (1, 2, 3)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="lblOpQty">Количество</label>
+                    <input type="number" step="0.05" id="opQty" min="0.05" value="1" inputmode="decimal">
+                    <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:6px;" id="quickQtyButtons"></div>
+                </div>
+
+                <div class="form-group hidden" id="selfBuyGroup" style="grid-column: 1 / -1;">
+                    <label style="color:var(--primary); font-weight:800;">🛒 Параметры докупки (Самозакуп за деньги):</label>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:var(--surface-subtle); padding:10px; border-radius:12px; border:1px solid var(--border);">
+                        <div>
+                            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">Источник денег:</label>
+                            <select id="opSelfBuySource">
+                                <option value="Из кассы ресторана">💵 Из кассы ресторана</option>
+                                <option value="Личные средства сотрудника">👤 Личные средства (к возврату)</option>
+                                <option value="Подотчет / Корп. карта">💳 Подотчет / Корп. карта</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">Потраченная сумма (₽):</label>
+                            <input type="number" id="opSelfBuyCost" placeholder="Сумма по чеку" inputmode="numeric">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group hidden" id="transferGroup">
+                    <label>🔄 Маршрут перемещения (Откуда ➔ Куда):</label>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                        <select id="opFromLoc"></select>
+                        <select id="opTargetLoc"></select>
+                    </div>
+                </div>
+                <div class="form-group hidden" id="expDateGroup">
+                    <label id="lblBatchDates">📅 Даты партии / Срок годности:</label>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                        <input type="date" id="opBatchFrom" title="Дата прихода / партии">
+                        <input type="date" id="opBatchTo" title="Годно ДО (Срок годности)">
+                    </div>
+                </div>
+                <div class="form-group"><label>Ответственный сотрудник (на кого записать операцию / бой)</label><select id="opStaffSelect"></select></div>
+                <div class="form-group"><label>Примечание / Чек / Причина</label><input type="text" id="opComment" placeholder="Стол / Банкет / Причина боя или списания"></div>
+            </div>
+            <button type="button" class="btn" id="btnSubmitOp" onclick="submitOperation()">Провести и сохранить в облако</button>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 3: ЗАЯВКИ -->
+    <div id="tab-orders" class="panel">
+        <div class="panel-header">
+            <h3>📝 Заявки на закупку и пополнение</h3>
+            <button type="button" class="btn-sm btn-add" onclick="openOrderModal()">➕ Создать заявку</button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Дата / Заявитель</th><th>Позиция и кол-во</th><th>Примечание</th><th>Статус</th><th>Управление</th></tr></thead>
+                <tbody id="ordersBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 4: ПЕРСОНАЛ И РОЛИ -->
+    <div id="tab-users" class="panel">
+        <div id="rolesConstructorBlock" style="margin-bottom: 22px;">
+            <div class="panel-header">
+                <h3>🎨 Должности и уровни доступа</h3>
+                <button type="button" class="btn-sm btn-add" onclick="openRoleModal(null)">➕ Создать должность</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Должность</th><th>Разрешенные права</th><th>Управление</th></tr></thead>
+                    <tbody id="rolesBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel-header">
+            <h3>👥 Штат сотрудников, пароли и бой</h3>
+            <button type="button" class="btn-sm btn-add" id="btnAddStaffTop" onclick="openUserModal(null)">➕ Добавить сотрудника</button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>ФИО сотрудника</th><th>Должность и Локация</th><th>ПИН-код</th><th>Бой посуды</th><th>Недостача бара</th><th>Действие</th></tr></thead>
+                <tbody id="usersBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 5: ЖУРНАЛ И ОБЛАКО -->
+    <div id="tab-logs" class="panel">
+        <div class="panel-header">
+            <h3 id="logsPanelHeaderTitle">📋 Журнал операций и Управление базой</h3>
+            <div>
+                <button type="button" class="btn-sm btn-word" onclick="downloadWordManual()">📄 Инструкция Word (.doc)</button>
+                <button type="button" class="btn-sm btn-edit" onclick="exportCSV()">📥 Отчет в Excel (CSV)</button>
+            </div>
+        </div>
+
+        <div class="cloud-meter">
+            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
+                <span>☁️ Заполненность облака: <span id="cloudUsedKb">0 КБ</span> (<span id="cloudUsedPercent" style="color:var(--success)">0.0% заполнено</span>)</span>
+                <span>Экономия трафика активна (EventSource SSE)</span>
+            </div>
+            <div class="cloud-bar-bg"><div id="cloudBarFill" class="cloud-bar-fill"></div></div>
+        </div>
+
+        <div id="dangerOpsBlock" class="hidden" style="background:rgba(220,38,38,0.06); border:1px solid rgba(220,38,38,0.25); border-radius:14px; padding:14px; margin-bottom:14px;">
+            <h4 style="font-size:13px; color:var(--danger); margin-bottom:8px;">⚠️ Блок опасных операций руководства (Директор / Менеджер):</h4>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn-sm btn-warn" id="btnResetMonthRev" onclick="resetMonthRevenueOnly()">💸 Обнулить выручку месяца</button>
+                <button type="button" class="btn-sm btn-warn" onclick="clearBarStockOnly()">🧹 Обнулить остатки отдела</button>
+                <button type="button" class="btn-sm btn-del" onclick="clearLogsHistory()">🗑 Очистить журнал</button>
+                <button type="button" class="btn-sm btn-add" onclick="archiveOldDaysKeepCurrentStock()">🗓 Закрыть месяц (Очистить старые дни)</button>
+            </div>
+        </div>
+
+        <div id="cloudConfigBox" style="background:var(--surface-subtle); border:1px solid var(--border); padding:14px; border-radius:14px; margin-bottom:14px;">
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <input type="text" id="cloudUrlInput" style="flex:1; min-width:200px; padding:9px; border:1px solid var(--border); border-radius:10px; font-size:12px; background:var(--surface); color:var(--text);" placeholder="Ссылка Firebase">
+                <button type="button" class="btn-sm btn-edit" onclick="saveCloudUrl()">Сохранить адрес базы</button>
+                <button type="button" class="btn-sm btn-add" onclick="syncToCloud(true)">📤 Выгрузить базу вручную</button>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Дата / Сотрудник</th><th>Позиция</th><th>Операция</th><th>Кол-во / Сумма</th><th>Отмена / Возврат в графу</th></tr></thead>
+                <tbody id="logsBody"></tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- ВКЛАДКА 6: ЧАТ -->
+    <div id="tab-chat" class="panel">
+        <div class="panel-header"><h3>💬 Внутренний чат смены</h3></div>
+        <div id="chatMessages" style="height:350px; overflow-y:auto; background:var(--surface-subtle); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:12px; display:flex; flex-direction:column; gap:10px;"></div>
+        <div style="display:flex; gap:8px;">
+            <input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1; padding:12px; border:1px solid var(--border); border-radius:12px; font-size:13.5px; background:var(--surface); color:var(--text);" onkeypress="if(event.key==='Enter') sendChatMessage()">
+            <button type="button" class="btn" style="width:auto; padding:0 20px;" onclick="sendChatMessage()">Отправить</button>
+        </div>
+    </div>
+</div>
+
+<!-- НИЖНЕЕ МЕНЮ -->
+<nav class="bottom-nav">
+    <button type="button" class="nav-item active" onclick="openPanel('tab-stock', this)"><span class="nav-icon">📦</span>Ревизия</button>
+    <button type="button" class="nav-item" onclick="openPanel('tab-ops', this)"><span class="nav-icon">⚡</span>Операции</button>
+    <button type="button" class="nav-item" onclick="openPanel('tab-orders', this)"><span class="nav-icon">📝</span>Заявки</button>
+    <button type="button" class="nav-item" onclick="openPanel('tab-users', this)"><span class="nav-icon">👥</span>Персонал</button>
+    <button type="button" class="nav-item" onclick="openPanel('tab-logs', this)"><span class="nav-icon">📋</span>Журнал</button>
+    <button type="button" class="nav-item" onclick="openPanel('tab-chat', this)"><span class="nav-icon">💬</span>Чат</button>
+</nav>
+
+<!-- МОДАЛЬНЫЕ ОКНА -->
+<div id="themeModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'themeModal')">
+    <div class="modal-window">
+        <h3>🎨 Оформление и интерфейс</h3>
+        <div class="theme-grid">
+            <div class="theme-btn" id="themeBtnLight" onclick="setAppTheme('light')"><div class="theme-swatch" style="background:#1b4332;"></div>🌿 Изумрудная</div>
+            <div class="theme-btn" id="themeBtnDark" onclick="setAppTheme('dark')"><div class="theme-swatch" style="background:#10b981;"></div>🌙 Тёмный Оникс</div>
+            <div class="theme-btn" id="themeBtnMidnight" onclick="setAppTheme('midnight')"><div class="theme-swatch" style="background:#7c3aed;"></div>🍸 Midnight Бар</div>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn" onclick="closeThemeModal()">Готово</button></div>
+    </div>
+</div>
+
+<div id="systemSettingsModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'systemSettingsModal')">
+    <div class="modal-window">
+        <h3>⚙️ Системные настройки</h3>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label>📢 Живое объявление для всех сотрудников (в шапке):</label>
+            <input type="text" id="editSysAnnouncement" placeholder="Напр.: Срочная ревизия!">
+        </div>
+        <div style="margin-bottom:12px; background:var(--surface-subtle); padding:10px; border-radius:12px; border:1px solid var(--border);">
+            <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <input type="checkbox" id="settingShowCarryOver" style="width:16px; height:16px;">
+                🔄 Показывать кнопку «Перенести остаток со вчерашнего дня»
+            </label>
+            <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="settingSoundFeedback" style="width:16px; height:16px;">
+                🔔 Звук при проведении операций
+            </label>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn" onclick="saveSystemSettings()">💾 Сохранить</button>
+            <button type="button" class="btn btn-outline" onclick="closeSystemSettingsModal()">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: ЛОКАЦИИ (С ВЫБОРОМ ПОДРАЗДЕЛЕНИЯ) -->
+<div id="locationsModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'locationsModal')">
+    <div class="modal-window">
+        <h3>📍 Управление локациями по отделам</h3>
+        <div class="form-group" style="margin-bottom: 10px;">
+            <label>Выберите подразделение для настройки:</label>
+            <select id="locModalDept" onchange="renderLocationsModalList()">
+                <option value="BAR">🍸 Бар «Глобус»</option>
+                <option value="RECEPTION">🏨 Ресепшен и гостиница</option>
+                <option value="DISHES">🍽 Посуда и инвентарь</option>
+            </select>
+        </div>
+        <div style="margin-bottom:12px; max-height:220px; overflow-y:auto;" id="locationsListWrap"></div>
+        <div style="display:flex; gap:6px; margin-bottom:14px;">
+            <input type="text" id="newLocName" placeholder="Новая локация..." style="flex:1; padding:9px; border:1px solid var(--border); border-radius:10px; background:var(--surface-subtle); color:var(--text);">
+            <button type="button" class="btn-sm btn-add" onclick="addCustomLocation()">Добавить</button>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn" onclick="closeLocationsModal()">Готово</button></div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: КАТЕГОРИИ (С ВЫБОРОМ ПОДРАЗДЕЛЕНИЯ) -->
+<div id="categoriesModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'categoriesModal')">
+    <div class="modal-window">
+        <h3>🏷 Управление категориями по отделам</h3>
+        <div class="form-group" style="margin-bottom: 10px;">
+            <label>Выберите подразделение для настройки:</label>
+            <select id="catModalDept" onchange="renderCategoriesModalList()">
+                <option value="BAR">🍸 Бар «Глобус»</option>
+                <option value="RECEPTION">🏨 Ресепшен и гостиница</option>
+                <option value="DISHES">🍽 Посуда и инвентарь</option>
+            </select>
+        </div>
+        <div style="margin-bottom:12px; max-height:220px; overflow-y:auto;" id="categoriesListWrap"></div>
+        <div style="display:flex; gap:6px; margin-bottom:14px;">
+            <input type="text" id="newCatName" placeholder="Новая категория..." style="flex:1; padding:9px; border:1px solid var(--border); border-radius:10px; background:var(--surface-subtle); color:var(--text);">
+            <button type="button" class="btn-sm btn-add" onclick="addCustomCategory()">Добавить</button>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn" onclick="closeCategoriesModal()">Готово</button></div>
+    </div>
+</div>
+
+<div id="orderModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'orderModal')">
+    <div class="modal-window">
+        <h3>📝 Создать заявку на закупку</h3>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>Поиск и выбор позиции (текущий отдел)</label>
+            <input type="text" id="orderSearchInput" placeholder="🔍 Быстрый поиск товара..." style="margin-bottom:6px;" oninput="filterOrderModalItems()">
+            <select id="orderItemSelect"></select>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;"><label>Количество</label><input type="number" id="orderQty" value="5" min="1"></div>
+        <div class="form-group" style="margin-bottom:10px;"><label>Примечание</label><input type="text" id="orderComment" placeholder="К банкету / На смену"></div>
+        <div class="modal-actions"><button type="button" class="btn btn-bar" onclick="submitBarOrder()">📤 Отправить</button><button type="button" class="btn btn-outline" onclick="closeOrderModal()">Отмена</button></div>
+    </div>
+</div>
+
+<div id="itemModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'itemModal')">
+    <div class="modal-window">
+        <h3>Карточка позиции</h3>
+        <input type="hidden" id="editItemId">
+        <div class="form-group" style="margin-bottom:8px;">
+            <label>Отдел</label>
+            <select id="editItemDept" onchange="populateModalCategories()">
+                <option value="BAR">🍸 Бар</option>
+                <option value="RECEPTION">🏨 Ресепшен</option>
+                <option value="DISHES">🍽 Посуда и Инвентарь</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;"><label>Наименование</label><input type="text" id="editItemName"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+            <div class="form-group"><label>Примечание</label><input type="text" id="editItemNote"></div>
+            <div class="form-group"><label>Объем / Размер</label><input type="text" id="editItemVol" placeholder="0,5 л / шт."></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+            <div class="form-group"><label>Категория</label><select id="editItemCat"></select></div>
+            <div class="form-group"><label>Локация</label><select id="editItemLoc"></select></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+            <div class="form-group"><label>Цена за бут./шт. (₽)</label><input type="number" id="editItemGuest" inputmode="numeric"></div>
+            <div class="form-group"><label>Цена порции (₽)</label><input type="number" id="editItemPortionPrice" inputmode="numeric"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px;">
+            <div class="form-group"><label>Объем бут. (мл, 0 для шт)</label><input type="number" id="editItemBottleMl" inputmode="numeric" placeholder="0 или 500"></div>
+            <div class="form-group"><label>Порция (мл)</label><input type="number" id="editItemPortionMl" inputmode="numeric" placeholder="50"></div>
+            <div class="form-group"><label>Начало (бут / шт)</label><input type="number" step="0.01" id="editItemStart" inputmode="decimal"></div>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn" onclick="saveItemModal()">💾 Сохранить</button><button type="button" class="btn btn-outline" onclick="closeItemModal()">Отмена</button></div>
+    </div>
+</div>
+
+<div id="userModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'userModal')">
+    <div class="modal-window">
+        <h3>Профиль сотрудника</h3>
+        <input type="hidden" id="editUserId">
+        <div class="form-group" style="margin-bottom:10px;"><label>ФИО сотрудника</label><input type="text" id="editUserName"></div>
+        <div class="form-group" style="margin-bottom:10px;"><label>📱 Телефон</label><input type="tel" id="editUserPhone" placeholder="+79990000000"></div>
+        <div class="form-group" style="margin-bottom:10px;"><label>ПИН-код (Пароль)</label><input type="text" id="editUserPin"></div>
+        <div class="form-group" style="margin-bottom:10px;"><label>Должность</label><select id="editUserRole"></select></div>
+        <div class="form-group" style="margin-bottom:10px;"><label>Локация</label><select id="editUserHall"></select></div>
+        <div class="modal-actions"><button type="button" class="btn" onclick="saveUserModal()">💾 Сохранить</button><button type="button" class="btn btn-outline" onclick="closeUserModal()">Отмена</button></div>
+    </div>
+</div>
+
+<div id="recoverModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'recoverModal')">
+    <div class="modal-window">
+        <h3>📱 Восстановление ПИН-кода</h3>
+        <div class="form-group" style="margin-bottom:10px;"><label>Сотрудник</label><select id="recUserSelect"></select></div>
+        <div class="form-group" style="margin-bottom:10px;"><label>Номер телефона</label><input type="tel" id="recPhoneInput" placeholder="+7999..."></div>
+        <div class="form-group" style="margin-bottom:10px;"><label>Новый ПИН-код</label><input type="text" id="recNewPinInput" placeholder="Минимум 4 цифры" inputmode="numeric"></div>
+        <div class="modal-actions">
+            <button type="button" class="btn" onclick="doRecoverByPhone()">🔑 Сменить ПИН</button>
+            <button type="button" class="btn btn-outline" onclick="document.getElementById('recoverModal').classList.add('hidden')">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<div id="roleModal" class="modal-backdrop hidden" onclick="onBackdropClick(event, 'roleModal')">
+    <div class="modal-window">
+        <h3>🎨 Настройка должности и прав</h3>
+        <input type="hidden" id="editRoleCode">
+        <div class="form-group" style="margin-bottom:10px;"><label>Название должности</label><input type="text" id="editRoleName"></div>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>Цвет значка</label>
+            <select id="editRoleColor">
+                <option value="#b91c1c">🔴 Директор</option>
+                <option value="#d97706">🟠 Менеджер</option>
+                <option value="#0284c7">🔵 Ресепшен</option>
+                <option value="#15803d">🟢 Старший смены</option>
+                <option value="#7e22ce">🟣 Официант / бармен</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label style="font-size:12px; font-weight:800; color:var(--primary); margin-bottom:6px; display:block;">Разрешенные права:</label>
+            <div style="display:flex; flex-direction:column; gap:8px; background:var(--surface-subtle); padding:10px; border-radius:10px; border:1px solid var(--border);">
+                <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="permEditItems" style="width:16px; height:16px;"> ✏️ Позиции, цены и начальные остатки</label>
+                <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="permDoOps" style="width:16px; height:16px;"> ⚡ Проводить операции и продажи</label>
+                <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="permSelectStaff" style="width:16px; height:16px;"> 👥 Записывать бой на сотрудников</label>
+                <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px; color:var(--blue);"><input type="checkbox" id="permUndoOwnLogs" style="width:16px; height:16px;"> ↩ Отменять свои ошибочные операции в журнале (Возврат в графу)</label>
+                <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="permUndoLogs" style="width:16px; height:16px;"> 🛠 Полное управление журналом и закрытие месяца (Руководство)</label>
+                <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="permManageStaff" style="width:16px; height:16px;"> 👑 Управлять персоналом</label>
+                <label style="font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="permViewFinances" style="width:16px; height:16px;"> 💰 Видеть выручку</label>
+            </div>
+        </div>
+        <div class="modal-actions" style="margin-top:16px;">
+            <button type="button" class="btn" onclick="saveRoleModal()">💾 Сохранить</button>
+            <button type="button" class="btn btn-outline" onclick="closeRoleModal()">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const BUILTIN_FIREBASE_URL = "https://lesnye-dali-default-rtdb.firebaseio.com";
+    function getTodayLocal() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+
+    const memStore = {};
+    function safeGet(key, fallback) {
+        try { const v = window.localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+        catch (e) { return memStore[key] !== undefined ? memStore[key] : fallback; }
+    }
+    function safeSet(key, val) {
+        memStore[key] = val;
+        try { window.localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+    }
+    function round2(n) { return Math.round((parseFloat(n) || 0) * 1000) / 1000; }
+    function normPhone(p) { return String(p || '').replace(/\D/g, '').slice(-10); }
+
+    let sysSettings = safeGet('ld12_sys_settings', { showCarryOver: false, soundFeedback: true });
+
+    function playAudioTone(freq, duration, type = 'sine') {
+        if (sysSettings.soundFeedback === false) return;
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx(); const osc = ctx.createOscillator(); const gain = ctx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + duration);
+        } catch(e) {}
+    }
+    function showToast(msg) {
+        const box = document.getElementById('toastBox'); if (!box) return;
+        box.innerText = msg; box.classList.remove('hidden');
+        clearTimeout(window._toastTimer); window._toastTimer = setTimeout(() => box.classList.add('hidden'), 3200);
+    }
+
+    let currentTheme = safeGet('ld12_theme', 'midnight');
+    let currentFontScale = safeGet('ld12_font_scale', 'normal');
+    let currentDensity = safeGet('ld12_density', 'normal');
+
+    function applyAppearanceSettings() {
+        if (currentTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+        else if (currentTheme === 'midnight') document.documentElement.setAttribute('data-theme', 'midnight');
+        else document.documentElement.setAttribute('data-theme', 'light');
+        
+        if (currentFontScale === 'large') document.documentElement.setAttribute('data-font-scale', 'large'); 
+        else document.documentElement.removeAttribute('data-font-scale');
+        
+        if (currentDensity === 'compact') document.documentElement.setAttribute('data-density', 'compact'); 
+        else document.documentElement.removeAttribute('data-density');
+        
+        ['Light', 'Dark', 'Midnight'].forEach(t => { 
+            const el = document.getElementById('themeBtn' + t); 
+            if (el) el.classList.toggle('active', currentTheme.toLowerCase() === t.toLowerCase()); 
+        });
+    }
+    function applySettingsEffects() { 
+        const btnCarry = document.getElementById('btnCarryOver'); 
+        if (btnCarry) btnCarry.style.display = sysSettings.showCarryOver ? 'inline-flex' : 'none'; 
+    }
+    function setAppTheme(themeName) { currentTheme = themeName; safeSet('ld12_theme', currentTheme); applyAppearanceSettings(); showToast('🎨 Тема обновлена!'); }
+    function setFontScale(scale) { currentFontScale = scale; safeSet('ld12_font_scale', currentFontScale); applyAppearanceSettings(); }
+    function setDensity(density) { currentDensity = density; safeSet('ld12_density', currentDensity); applyAppearanceSettings(); }
+    function openThemeModal() { applyAppearanceSettings(); document.getElementById('themeModal').classList.remove('hidden'); }
+    function closeThemeModal() { document.getElementById('themeModal').classList.add('hidden'); }
+    function onBackdropClick(e, modalId) { if (e.target.id === modalId) document.getElementById(modalId).classList.add('hidden'); }
+
+    const DEFAULT_LOCATIONS = {
+        DISHES: ["Банкетный зал", "Ресторан «Глобус»", "Склад резерва", "Летний шатер"],
+        BAR: ["Бар «Глобус»", "Банкетный бар", "Склад бара", "Летний бар"],
+        RECEPTION: ["Стойка ресепшен", "Мини-бар", "Банный комплекс", "Склад гостиницы", "Номера Люкс", "Бунгало", "Горничным"]
+    };
+    const DEFAULT_CATEGORIES = {
+        DISHES: ["Стекло", "Фарфор / Тарелки", "Приборы", "Инвентарь"],
+        BAR: ["Шампанское/Игристое", "ПИВО", "Б/Алк. напитки", "Прочее", "ВИНО", "Вермут", "ВОДКА", "ВИСКИ", "КОНЬЯК", "КОФЕ И ДОБАВКИ"],
+        RECEPTION: ["Вода и напитки", "Мороженое", "Пиво", "Шоколад и снеки", "Банные товары", "Одноразовая посуда", "Гигиена (саше)", "Аренда и прочее"]
+    };
+    const DEPT_OPS = {
+        DISHES: [
+            {val:"AUDIT", text:"🔍 Утренняя сверка / Факт (Авто-расчет недостачи)"},
+            {val:"OUT_STAFF", text:"➖ Бой / Недостача на сотрудника"},
+            {val:"OUT_GUEST", text:"💳 Бой гостя (В чек)"},
+            {val:"EXPIRED", text:"⚠️ Бой / Утрата / Списано (Износ / Скол)"},
+            {val:"SELF_BUY", text:"🛒 Докупка / Самозакуп"},
+            {val:"IN", text:"➕ Приход новой посуды"},
+            {val:"MOVE", text:"🔄 Перемещение"}
+        ],
+        BAR: [
+            {val:"AUDIT", text:"🔍 Утренняя сверка / Факт"},
+            {val:"BAR_SALE", text:"💰 Продажа за день (Расход)"},
+            {val:"SELF_BUY", text:"🛒 Срочный докуп / Самозакуп"},
+            {val:"IN", text:"➕ Приход партии"},
+            {val:"EXPIRED", text:"⚠️ Списано по просрочке"},
+            {val:"OUT_STAFF", text:"➖ Бой / Недостача на сотрудника"},
+            {val:"MOVE", text:"🔄 Перемещение (Списание из остатка)"}
+        ],
+        RECEPTION: [
+            {val:"AUDIT", text:"🔍 Сверка остатка / Факт"},
+            {val:"BAR_SALE", text:"💰 Продажа гостю (Расход)"},
+            {val:"SELF_BUY", text:"🛒 Докупка / Самозакуп"},
+            {val:"IN", text:"➕ Приход товара"},
+            {val:"EXPIRED", text:"⚠️ Списано (Просрочка / Брак)"},
+            {val:"OUT_STAFF", text:"➖ Недостача / Бой на сотрудника"},
+            {val:"MOVE", text:"🔄 Перемещение (Списание из остатка)"}
+        ]
+    };
+
+    const initialRoles = [
+        { code: "DIR", name: "Директор", color: "#b91c1c", canEditItems: true, canDoOps: true, canSelectStaff: true, canUndoOwnLogs: true, canUndoLogs: true, canManageStaff: true, canViewFinances: true },
+        { code: "ADMIN", name: "Менеджер", color: "#d97706", canEditItems: true, canDoOps: true, canSelectStaff: true, canUndoOwnLogs: true, canUndoLogs: true, canManageStaff: true, canViewFinances: true },
+        { code: "ACC", name: "Бухгалтер", color: "#2563eb", canEditItems: true, canDoOps: true, canSelectStaff: true, canUndoOwnLogs: true, canUndoLogs: true, canManageStaff: false, canViewFinances: true },
+        { code: "SEN_WAIT", name: "Старший официант", color: "#15803d", canEditItems: false, canDoOps: true, canSelectStaff: true, canUndoOwnLogs: true, canUndoLogs: false, canManageStaff: false, canViewFinances: true },
+        { code: "WAIT_BAR", name: "Официант / бармен", color: "#7e22ce", canEditItems: false, canDoOps: true, canSelectStaff: true, canUndoOwnLogs: true, canUndoLogs: false, canManageStaff: false, canViewFinances: false },
+        { code: "RECEPTION_ADMIN", name: "Администратор ресепшен", color: "#0284c7", canEditItems: false, canDoOps: true, canSelectStaff: true, canUndoOwnLogs: true, canUndoLogs: false, canManageStaff: false, canViewFinances: true }
+    ];
+
+    const initialUsers = [
+        { id: 10, name: "Директор Леденева Ю. В.", role: "DIR", hall: "Ресторан «Глобус»", pin: "2014", phone: "" },
+        { id: 1, name: "Петров Евгений Максимович", role: "ADMIN", hall: "Банкетный зал", pin: "498090", phone: "" },
+        { id: 4, name: "Тамбовцева В.", role: "WAIT_BAR", hall: "Бар «Глобус»", pin: "7001", phone: "" },
+        { id: 21, name: "Радченко Карина", role: "SEN_WAIT", hall: "Бар «Глобус»", pin: "0820", phone: "" },
+        { id: 22, name: "Шалагинова Светлана", role: "RECEPTION_ADMIN", hall: "Стойка ресепшен", pin: "0120", phone: "" },
+        { id: 23, name: "Щербинина Елена", role: "RECEPTION_ADMIN", hall: "Стойка ресепшен", pin: "0130", phone: "" },
+        { id: 24, name: "Волкова Юлия", role: "RECEPTION_ADMIN", hall: "Стойка ресепшен", pin: "0140", phone: "" }
+    ];
+
+    const initialItems = [
+        { id: 101, dept: "DISHES", name: "Бокал для вина 450 мл", note: "стекло", vol: "450 мл", cat: "Стекло", loc: "Банкетный зал", qty: 116, min: 120, unit: "шт.", guest: 600 },
+        { id: 102, dept: "DISHES", name: "Бокал для шампанского 225 мл", note: "стекло", vol: "225 мл", cat: "Стекло", loc: "Банкетный зал", qty: 95, min: 100, unit: "шт.", guest: 450 },
+        { id: 103, dept: "DISHES", name: "Стопка 60 мл", note: "стекло", vol: "60 мл", cat: "Стекло", loc: "Банкетный зал", qty: 140, min: 140, unit: "шт.", guest: 250 },
+        { id: 104, dept: "DISHES", name: "Тарелка подстановочная 28 см", note: "фарфор", vol: "28 см", cat: "Фарфор / Тарелки", loc: "Банкетный зал", qty: 110, min: 110, unit: "шт.", guest: 750 },
+
+        { id: 201, dept: "BAR", name: "Абрау-Дюрсо", note: "игристое", vol: "750 мл", bottleMl: 750, cat: "Шампанское/Игристое", loc: "Бар «Глобус»", unit: "бут.", guest: 1800, portionMl: 0, portionPrice: 0, initStart: 1 },
+        { id: 202, dept: "BAR", name: "Водка Царская Оригинальная", note: "охл.", vol: "500 мл", bottleMl: 500, cat: "ВОДКА", loc: "Бар «Глобус»", unit: "бут.", guest: 1500, portionMl: 50, portionPrice: 150, initStart: 1.35 },
+        { id: 209, dept: "BAR", name: "Виски Jameson", note: "ирландский", vol: "700 мл", bottleMl: 700, cat: "ВИСКИ", loc: "Бар «Глобус»", unit: "бут.", guest: 3500, portionMl: 50, portionPrice: 350, initStart: 1.5 },
+        { id: 210, dept: "BAR", name: "Коньяк Старый Кенигсберг", note: "5 лет", vol: "500 мл", bottleMl: 500, cat: "КОНЬЯК", loc: "Бар «Глобус»", unit: "бут.", guest: 2200, portionMl: 50, portionPrice: 220, initStart: 1 },
+
+        { id: 203, dept: "BAR", name: "Пиво Барнаульское", note: "светлое", vol: "500 мл", bottleMl: 0, cat: "ПИВО", loc: "Бар «Глобус»", unit: "бут.", guest: 180, initStart: 12 },
+        { id: 204, dept: "BAR", name: "Пиво Белый Колос", note: "светлое", vol: "500 мл", bottleMl: 0, cat: "ПИВО", loc: "Бар «Глобус»", unit: "бут.", guest: 180, initStart: 0 },
+        { id: 205, dept: "BAR", name: "Вобла фирменная ст., ж/б", note: "", vol: "500 мл", bottleMl: 0, cat: "ПИВО", loc: "Бар «Глобус»", unit: "шт.", guest: 180, initStart: 14 },
+
+        { id: 301, dept: "RECEPTION", name: "Напиток Липтон 0,5", note: "", vol: "0,5 л", cat: "Вода и напитки", loc: "Стойка ресепшен", initStart: 2, unit: "бут.", bottleMl: 0, guest: 150 },
+        { id: 302, dept: "RECEPTION", name: "Вода 0,5 л. Алтайск.Источник", note: "", vol: "0,5 л", cat: "Вода и напитки", loc: "Стойка ресепшен", initStart: 39, unit: "бут.", bottleMl: 0, guest: 80 },
+        { id: 328, dept: "RECEPTION", name: "Пиво Bad", note: "", vol: "0,45 л", cat: "Пиво", loc: "Стойка ресепшен", initStart: 2, unit: "бут.", bottleMl: 0, guest: 195 },
+        { id: 384, dept: "RECEPTION", name: "Шампунь саше", note: "саше", vol: "саше", cat: "Гигиена (саше)", loc: "Стойка ресепшен", initStart: 9, unit: "шт.", bottleMl: 0, guest: 50 },
+        { id: 361, dept: "RECEPTION", name: "Веник березовый", note: "", vol: "шт.", cat: "Банные товары", loc: "Банный комплекс", initStart: 7, unit: "шт.", bottleMl: 0, guest: 370 },
+        { id: 370, dept: "RECEPTION", name: "Тапочки одноразовые д/бани", note: "", vol: "пар.", cat: "Банные товары", loc: "Банный комплекс", initStart: 15, unit: "пар", bottleMl: 0, guest: 160 }
+    ];
+
+    let currentDept = safeGet('ld12_dept', 'BAR');
+    let cloudBaseUrl = safeGet('ld12_cloud_url', BUILTIN_FIREBASE_URL);
+    let locations = safeGet('ld12_locations', DEFAULT_LOCATIONS);
+    let customCategories = safeGet('ld12_cats', DEFAULT_CATEGORIES);
+    let sysAnnouncement = safeGet('ld12_announcement', "");
+    let showZeroOnly = false; 
+    let showExpiringOnly = false;
+    let roles = safeGet('ld12_roles', initialRoles);
+    let users = safeGet('ld12_users', initialUsers);
+    let items = safeGet('ld12_items', initialItems);
+    let barDays = safeGet('ld12_bardays', {});
+    let dishesDays = safeGet('ld12_dishesdays', {});
+    let barOrders = safeGet('ld12_barorders', []);
+    let revenueOffsets = safeGet('ld12_rev_offsets', {});
+    let dishesMeta = safeGet('ld12_dishesmeta', { date: getTodayLocal(), author: "" });
+    let logs = safeGet('ld12_logs', []); 
+    let chatLog = safeGet('ld12_chat', []); 
+    let currentUser = safeGet('ld12_session', null);
+    
+    let activeBarDate = getTodayLocal();
+    let isSyncing = false;
+    let syncDebounceTimer = null;
+    let eventSourceInstance = null;
+
+    function getActualItemSales(item, rec) {
+        const totalOut = round2(rec.out || 0);
+        const transfers = round2(rec.transfersOut || 0);
+        const staffLoss = round2(rec.staffDebtOut || 0);
+        return Math.max(0, round2(totalOut - transfers - staffLoss));
+    }
+
+    function formatStockDisplay(item, rawVal) {
+        const val = round2(rawVal);
+        const bMl = parseFloat(item.bottleMl) || 0;
+        
+        if (bMl <= 0) {
+            return `${val} ${item.unit || 'шт.'}`;
+        }
+        if (val <= 0) return `0 ${item.unit || 'бут.'}`;
+
+        const fullBottles = Math.floor(val);
+        const fraction = round2(val - fullBottles);
+        const remMl = Math.round(fraction * bMl);
+
+        if (fullBottles > 0 && remMl > 0) {
+            return `${fullBottles} бут. ${remMl} мл`;
+        } else if (fullBottles > 0 && remMl === 0) {
+            return `${fullBottles} бут.`;
+        } else {
+            return `${remMl} мл`;
+        }
+    }
+
+    function sanitizeLoadedDatabase() {
+        items.forEach(it => {
+            const isBeerOrSnack = (it.cat === 'ПИВО' || it.name.toLowerCase().includes('пиво') || it.name.toLowerCase().includes('вобла') || it.cat === 'Банные товары' || it.cat === 'Шоколад и снеки' || it.cat === 'Гигиена (саше)');
+            if (isBeerOrSnack) {
+                it.bottleMl = 0;
+                if (!it.unit || it.unit === 'мл') it.unit = 'шт.';
+            }
+        });
+
+        logs.forEach(l => {
+            if (l.type === 'MOVE_OUT' && l.dept === 'RECEPTION') {
+                const dKey = l.barDate || l.date.split(' ')[0];
+                const rec = getBarDayRecord(l.itemId, dKey);
+                if (rec) {
+                    rec.transfersOut = Math.max(rec.transfersOut || 0, l.qty);
+                    if (rec.incoming >= l.qty && l.label && l.label.includes('Списано')) {
+                        rec.incoming = Math.max(0, rec.incoming - l.qty);
+                    }
+                }
+            }
+        });
+    }
+
+    function ensureInitialDataMerged() {
+        if (!roles || roles.length === 0) roles = JSON.parse(JSON.stringify(initialRoles));
+        roles.forEach(r => { if (r.canUndoOwnLogs === undefined) r.canUndoOwnLogs = true; });
+        if (!users || users.length === 0) users = JSON.parse(JSON.stringify(initialUsers));
+        if (!items || items.length === 0) items = JSON.parse(JSON.stringify(initialItems));
+        if (!locations.RECEPTION) locations.RECEPTION = DEFAULT_LOCATIONS.RECEPTION;
+        if (!customCategories.RECEPTION) customCategories.RECEPTION = DEFAULT_CATEGORIES.RECEPTION;
+        sanitizeLoadedDatabase();
+    }
+    ensureInitialDataMerged();
+
+    function setQuickQty(val) { 
+        const inp = document.getElementById('opQty'); 
+        if (!inp) return; 
+        inp.value = val; 
+        playAudioTone(700, 0.05); 
+    }
+
+    function openRecoverModal() {
+        document.getElementById('recUserSelect').innerHTML = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+        document.getElementById('recPhoneInput').value = ''; document.getElementById('recNewPinInput').value = '';
+        document.getElementById('recoverModal').classList.remove('hidden');
+    }
+    async function doRecoverByPhone() {
+        const uid = document.getElementById('recUserSelect').value; const phoneIn = normPhone(document.getElementById('recPhoneInput').value); const newPin = document.getElementById('recNewPinInput').value.trim();
+        const user = users.find(u => String(u.id) === String(uid));
+        if (!user || !user.phone || normPhone(user.phone).length < 6 || normPhone(user.phone) !== phoneIn) return showToast('❌ Номер телефона не совпадает!');
+        if (!newPin || newPin.length < 4) return showToast('Введите ПИН (мин. 4 цифры)!');
+        user.pin = newPin; currentUser = user; safeSet('ld12_session', currentUser);
+        document.getElementById('recoverModal').classList.add('hidden'); syncToCloud(true); updateAuthUI(); showToast('✅ Пароль успешно обновлен!');
+    }
+
+    function checkAndProcessExpirations(dateStr) {
+        const dayObj = barDays[dateStr];
+        if (!dayObj) return;
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        ['BAR', 'RECEPTION'].forEach(dept => {
+            const deptObj = dayObj[dept];
+            if (!deptObj || !deptObj.items) return;
+            Object.keys(deptObj.items).forEach(itemId => {
+                const rec = deptObj.items[itemId];
+                if (rec && rec.expDate && rec.expDate.length >= 10) {
+                    const parts = rec.expDate.split('—');
+                    const endDateStr = parts[parts.length - 1].trim();
+                    const expDateObj = new Date(endDateStr);
+                    if (!isNaN(expDateObj.getTime())) {
+                        expDateObj.setHours(0,0,0,0);
+                        const diffDays = Math.round((expDateObj - today) / (1000 * 60 * 60 * 24));
+                        const currentEnd = round2(round2(rec.start) + round2(rec.incoming) - round2(rec.out) - round2(rec.exp));
+                        if (diffDays <= 0 && currentEnd > 0) {
+                            const autoQty = currentEnd;
+                            rec.exp = round2(rec.exp + autoQty);
+                            const alreadyLogged = logs.some(l => l.barDate === dateStr && l.itemId == itemId && l.type === 'EXPIRED_AUTO');
+                            if (!alreadyLogged) {
+                                const item = items.find(i => String(i.id) === String(itemId));
+                                const sum = item ? calcItemSaleRub(item, autoQty) : 0;
+                                logs.push({
+                                    id: Date.now() + Math.random(),
+                                    dept: dept,
+                                    barDate: dateStr,
+                                    date: dateStr + ' ' + new Date().toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' }),
+                                    author: 'Автосистема',
+                                    authorId: 0,
+                                    createdById: 0,
+                                    itemId: itemId,
+                                    itemName: item ? item.name : 'Позиция',
+                                    unit: item ? (item.unit || 'бут.') : 'бут.',
+                                    loc: item ? item.loc : '',
+                                    type: 'EXPIRED_AUTO',
+                                    label: `⚠️ Автосписание просрочки`,
+                                    badgeClass: 'b-warn',
+                                    qty: autoQty,
+                                    sum: sum,
+                                    comment: `Истек срок годности (${endDateStr})`
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    function ensureBarDayStruct(dateStr, dept) {
+        if (!dept) dept = currentDept;
+        if (dept !== 'BAR' && dept !== 'RECEPTION') dept = 'BAR';
+        if (!barDays[dateStr] || typeof barDays[dateStr] !== 'object') {
+            barDays[dateStr] = {};
+        }
+        if (barDays[dateStr].items && !barDays[dateStr].BAR) {
+            const oldAuth = barDays[dateStr].author || '';
+            const oldMgr = barDays[dateStr].manager || '';
+            const oldItems = barDays[dateStr].items || {};
+            barDays[dateStr] = {
+                BAR: { author: oldAuth, manager: oldMgr, items: oldItems },
+                RECEPTION: { author: '', manager: '', items: {} }
+            };
+        }
+        if (!barDays[dateStr][dept] || typeof barDays[dateStr][dept] !== 'object') {
+            barDays[dateStr][dept] = { author: '', manager: '', items: {} };
+        }
+        if (typeof barDays[dateStr][dept].author !== 'string') barDays[dateStr][dept].author = '';
+        if (typeof barDays[dateStr][dept].manager !== 'string') barDays[dateStr][dept].manager = '';
+        if (!barDays[dateStr][dept].items || typeof barDays[dateStr][dept].items !== 'object') {
+            barDays[dateStr][dept].items = {};
+        }
+
+        items.filter(i => i.dept === dept).forEach(item => {
+            if (!barDays[dateStr][dept].items[item.id]) {
+                const prevExp = getPrevDayExpectedEnd(item.id, dateStr, dept);
+                let rawInit = item.initStart !== undefined ? item.initStart : (item.qty || 1);
+                
+                if (prevExp !== null) {
+                    barDays[dateStr][dept].items[item.id] = { start: prevExp, incoming: 0, out: 0, exp: 0, expDate: "", transfersOut: 0, staffDebtOut: 0 };
+                } else {
+                    barDays[dateStr][dept].items[item.id] = {
+                        start: rawInit,
+                        incoming: (item.initIn || 0),
+                        out: (item.initOut || 0),
+                        exp: 0,
+                        expDate: "",
+                        transfersOut: 0,
+                        staffDebtOut: 0
+                    };
+                }
+            }
+        });
+        checkAndProcessExpirations(dateStr);
+        return barDays[dateStr][dept];
+    }
+
+    function getPrevDayExpectedEnd(itemId, dateStr, dept) {
+        if (!dept) {
+            const item = items.find(i => String(i.id) === String(itemId));
+            dept = item ? (item.dept || 'BAR') : 'BAR';
+        }
+        const prevDates = Object.keys(barDays).filter(d => d < dateStr && barDays[d] && (barDays[d][dept] || barDays[d].items)).sort();
+        if (!prevDates.length) return null;
+        const pDayObj = barDays[prevDates[prevDates.length - 1]];
+        const pDeptObj = pDayObj[dept] ? pDayObj[dept] : { items: pDayObj.items || {} };
+        if (!pDeptObj.items || !pDeptObj.items[itemId]) return null;
+        const pRec = pDeptObj.items[itemId];
+        return Math.max(0, round2(round2(pRec.start) + round2(pRec.incoming) - round2(pRec.out) - round2(pRec.exp)));
+    }
+
+    function getBarDayRecord(itemId, dateStr) {
+        const item = items.find(i => String(i.id) === String(itemId));
+        const dept = item ? (item.dept || 'BAR') : 'BAR';
+        const deptObj = ensureBarDayStruct(dateStr, dept);
+        if (!deptObj.items[itemId]) {
+            deptObj.items[itemId] = { start: item?.qty || 1, incoming: 0, out: 0, exp: 0, expDate: "", transfersOut: 0, staffDebtOut: 0 };
+        }
+        return deptObj.items[itemId];
+    }
+
+    function ensureDishesDayRecord(itemId, dateStr) {
+        if (!dishesDays[dateStr]) dishesDays[dateStr] = {};
+        if (!dishesDays[dateStr][itemId]) {
+            const item = items.find(i => String(i.id) === String(itemId));
+            dishesDays[dateStr][itemId] = { count: item && item.qty !== undefined ? item.qty : 100, incoming: 0, loss: 0, lossReason: 'Износ/Скол' };
+        }
+        return dishesDays[dateStr][itemId];
+    }
+
+    function propagateForward(fromDate) {
+        const allDates = Object.keys(barDays).sort();
+        const startIndex = allDates.indexOf(fromDate);
+        if (startIndex === -1 || startIndex === allDates.length - 1) return;
+        for (let i = startIndex + 1; i < allDates.length; i++) {
+            const dateStr = allDates[i];
+            const prevDateStr = allDates[i - 1];
+            const pObj = barDays[prevDateStr];
+            if (!barDays[dateStr] || typeof barDays[dateStr] !== 'object') barDays[dateStr] = {};
+            const cObj = barDays[dateStr];
+            ['BAR', 'RECEPTION'].forEach(dept => {
+                const pDeptObj = pObj && pObj[dept] ? pObj[dept] : (dept === 'BAR' && pObj && pObj.items ? pObj : null);
+                if (pDeptObj && pDeptObj.items) {
+                    if (!cObj[dept] || typeof cObj[dept] !== 'object') cObj[dept] = { author: '', manager: '', items: {} };
+                    if (!cObj[dept].items) cObj[dept].items = {};
+                    Object.keys(pDeptObj.items).forEach(id => {
+                        const pR = pDeptObj.items[id]; 
+                        const pEnd = Math.max(0, round2(round2(pR.start) + round2(pR.incoming) - round2(pR.out) - round2(pR.exp)));
+                        if (cObj[dept].items[id]) cObj[dept].items[id].start = pEnd;
+                        else cObj[dept].items[id] = { start: pEnd, incoming: 0, out: 0, exp: 0, expDate: "", transfersOut: 0, staffDebtOut: 0 };
+                    });
+                }
+            });
+            checkAndProcessExpirations(dateStr);
+        }
+    }
+
+    function getRoleObj(roleCode) { return roles.find(r => r.code === roleCode) || roles[0]; }
+    function myPerms() { return currentUser ? getRoleObj(currentUser.role) : {}; }
+    function getEndpoint() { return cloudBaseUrl ? cloudBaseUrl.trim().replace(/\/$/, '') + '/lesnye_dali_v12_PRO.json' : null; }
+
+    function updateCloudStorageMeter() {
+        try {
+            const str = JSON.stringify({ roles, users, items, locations, barDays, dishesDays, barOrders, revenueOffsets, dishesMeta, logs, customCategories, sysAnnouncement, chatLog });
+            const bytes = new Blob([str]).size; 
+            const kb = (bytes / 1024).toFixed(1);
+            const percent = ((kb / 1048576) * 100).toFixed(4);
+            const hdrEl = document.getElementById('hdrCloudSize'); if (hdrEl) hdrEl.innerText = `${kb} КБ`;
+            const usedEl = document.getElementById('cloudUsedKb'); if (usedEl) usedEl.innerText = `${kb} КБ`;
+            const pctEl = document.getElementById('cloudUsedPercent'); if (pctEl) pctEl.innerText = `${percent}% от 1ГБ`;
+            const barFill = document.getElementById('cloudBarFill'); if (barFill) barFill.style.width = Math.min(100, Math.max(1, (bytes / 10485760) * 100)) + '%';
+        } catch (e) {}
+    }
+
+    function syncToCloud(immediate = false) {
+        safeSet('ld12_locations', locations); 
+        safeSet('ld12_roles', roles); 
+        safeSet('ld12_users', users); 
+        safeSet('ld12_items', items);
+        safeSet('ld12_bardays', barDays); 
+        safeSet('ld12_dishesdays', dishesDays); 
+        safeSet('ld12_barorders', barOrders); 
+        safeSet('ld12_rev_offsets', revenueOffsets);
+        safeSet('ld12_dishesmeta', dishesMeta); 
+        safeSet('ld12_logs', logs); 
+        safeSet('ld12_cats', customCategories); 
+        safeSet('ld12_announcement', sysAnnouncement); 
+        safeSet('ld12_chat', chatLog);
+        updateCloudStorageMeter();
+
+        if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+
+        const executePush = async () => {
+            const ep = getEndpoint(); if (!ep) return;
+            try { 
+                isSyncing = true; 
+                await fetch(ep, { 
+                    method: 'PUT', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ 
+                        locations, roles, users, items, barDays, dishesDays, barOrders, revenueOffsets, dishesMeta, logs, customCategories, sysAnnouncement, chatLog, updatedAt: Date.now() 
+                    }) 
+                });
+                const dot = document.getElementById('cloudDot');
+                if (dot) dot.classList.add('online');
+            } catch (err) { 
+                const dot = document.getElementById('cloudDot');
+                if (dot) dot.classList.remove('online'); 
+            } finally { 
+                isSyncing = false; 
+            }
+        };
+
+        if (immediate) {
+            executePush();
+        } else {
+            syncDebounceTimer = setTimeout(executePush, 1000);
+        }
+    }
+
+    // НАТИВНЫЙ РЕЖИМ РЕАЛЬНОГО ВРЕМЕНИ (SSE) БЕЗ ЗАСОРЕНИЯ ТРАФИКА
+    function initRealtimeListener() {
+        const ep = getEndpoint();
+        if (!ep || eventSourceInstance) return;
+
+        try {
+            eventSourceInstance = new EventSource(ep);
+            eventSourceInstance.addEventListener('put', (e) => {
+                // Если в этот момент пользователь вводит данные в активную ячейку, не сбиваем фокус
+                const activeTag = document.activeElement ? document.activeElement.tagName : '';
+                if (activeTag === 'INPUT' || activeTag === 'SELECT') return;
+
+                try {
+                    const parsed = JSON.parse(e.data);
+                    if (parsed && parsed.data && parsed.data.barDays) {
+                        applyCloudData(parsed.data, false);
+                    }
+                } catch(err) {}
+            });
+            eventSourceInstance.onerror = () => {
+                // При ошибке или разрыве соединения не спамим запросами
+                if (eventSourceInstance) {
+                    eventSourceInstance.close();
+                    eventSourceInstance = null;
+                }
+            };
+        } catch(e) {}
+    }
+
+    function applyCloudData(data, forceManual) {
+        if (!data || !Array.isArray(data.users) || data.users.length === 0) return;
+        const dot = document.getElementById('cloudDot');
+        if (dot) dot.classList.add('online');
+        if (data.locations) { locations = data.locations; safeSet('ld12_locations', locations); }
+        if (data.roles) { roles = data.roles; safeSet('ld12_roles', roles); }
+        if (data.users && data.users.length) { users = data.users; safeSet('ld12_users', users); }
+        if (data.items) { items = data.items; safeSet('ld12_items', items); }
+        barDays = data.barDays || {}; safeSet('ld12_bardays', barDays);
+        dishesDays = data.dishesDays || {}; safeSet('ld12_dishesdays', dishesDays);
+        barOrders = data.barOrders || []; safeSet('ld12_barorders', barOrders);
+        revenueOffsets = data.revenueOffsets || {}; safeSet('ld12_rev_offsets', revenueOffsets);
+        dishesMeta = data.dishesMeta || { date: getTodayLocal(), author: "" }; safeSet('ld12_dishesmeta', dishesMeta);
+        logs = data.logs || []; safeSet('ld12_logs', logs);
+        customCategories = data.customCategories || DEFAULT_CATEGORIES; safeSet('ld12_cats', customCategories);
+        sysAnnouncement = data.sysAnnouncement || ""; safeSet('ld12_announcement', sysAnnouncement);
+        chatLog = data.chatLog || []; safeSet('ld12_chat', chatLog);
+        
+        ensureInitialDataMerged();
+        updateCloudStorageMeter();
+        if (currentUser) { 
+            const updatedMe = users.find(u => String(u.id) === String(currentUser.id)); 
+            if (updatedMe) { 
+                currentUser = updatedMe; 
+                safeSet('ld12_session', currentUser); 
+            } 
+        }
+        populateLoginDropdowns(); 
+        loadMetaInputsSafely(); 
+        applySettingsEffects(); 
+        renderAll();
+        if (forceManual) showToast('☁️ Синхронизировано!');
+    }
+
+    async function syncFromCloud(forceManual) {
+        if (isSyncing) return;
+        const ep = getEndpoint(); if (!ep) return;
+        try {
+            const res = await fetch(ep + '?t=' + Date.now()); 
+            if (!res.ok) throw new Error('HTTP');
+            const data = await res.json();
+            applyCloudData(data, forceManual);
+            initRealtimeListener();
+        } catch (err) { 
+            const dot = document.getElementById('cloudDot');
+            if (dot) dot.classList.remove('online'); 
+            if (forceManual) showToast('⚠️ Офлайн режим'); 
+        }
+    }
+
+    function onBarDateChange(newDateVal) {
+        if (!newDateVal) return; 
+        activeBarDate = newDateVal; 
+        ensureBarDayStruct(activeBarDate, currentDept);
+        loadMetaInputsSafely();
+        const titles = { BAR: `🍸 Ревизия и прайс бара на дату: ${activeBarDate}`, RECEPTION: `🏨 Ревизия ресепшена на дату: ${activeBarDate}`, DISHES: `🍽 Инвентаризация посуды` };
+        document.getElementById('stockPanelTitle').innerText = titles[currentDept] || '';
+        renderAll(); 
+        showToast(`📅 Открыта дата: ${activeBarDate}`);
+    }
+    function stepBarDate(deltaDays) { 
+        const parts = activeBarDate.split('-').map(Number); 
+        const d = new Date(parts[0], parts[1] - 1, parts[2]); 
+        d.setDate(d.getDate() + deltaDays); 
+        onBarDateChange(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`); 
+    }
+    function goTodayBarDate() { onBarDateChange(getTodayLocal()); }
+
+    async function carryOverFromPrevDay() {
+        if (!myPerms().canDoOps && !myPerms().canEditItems) return showToast('Нет прав!');
+        const allDates = Object.keys(barDays).filter(d => d < activeBarDate).sort();
+        if (!allDates.length) return showToast('Нет предыдущих дат для переноса остатка!');
+        const prevDate = allDates[allDates.length - 1];
+        const prevDayObj = ensureBarDayStruct(prevDate, currentDept);
+
+        items.filter(i => i.dept === currentDept).forEach(item => {
+            const pRec = prevDayObj.items[item.id] || { start: 0, incoming: 0, out: 0, exp: 0 };
+            const endVal = Math.max(0, round2(round2(pRec.start) + round2(pRec.incoming) - round2(pRec.out) - round2(pRec.exp)));
+            const cRec = getBarDayRecord(item.id, activeBarDate);
+            cRec.start = endVal;
+        });
+
+        syncToCloud(true); renderAll();
+        showToast(`🔄 Конечный остаток с ${prevDate} перенесен в начало ${activeBarDate} (${currentDept})!`);
+    }
+
+    function onBarMetaInput(syncNow = false) { 
+        const deptObj = ensureBarDayStruct(activeBarDate, currentDept); 
+        const aInp = document.getElementById('barAuthorInput');
+        const mInp = document.getElementById('barManagerInput');
+        if (aInp) deptObj.author = aInp.value.trim(); 
+        if (mInp) deptObj.manager = mInp.value.trim(); 
+        safeSet('ld12_bardays', barDays);
+        if (syncNow) { syncToCloud(true); }
+    }
+
+    function onDishesMetaInput(syncNow = false) {
+        const dAuth = document.getElementById('dishesAuthorInput');
+        if (dAuth) dishesMeta.author = dAuth.value.trim();
+        safeSet('ld12_dishesmeta', dishesMeta);
+        if (syncNow) { syncToCloud(true); }
+    }
+    
+    async function saveBarDayManual() {
+        onBarMetaInput(false);
+        const deptObj = ensureBarDayStruct(activeBarDate, currentDept);
+        const auth = (deptObj.author || '').trim();
+        const mgr = (deptObj.manager || '').trim();
+        if (!auth || !mgr) {
+            playAudioTone(220, 0.2, 'triangle');
+            return showToast('❌ Обязательно укажите обоих ответственных: Ответственный смены и Руководство!');
+        }
+        deptObj.isSaved = true;
+        syncToCloud(true);
+        playAudioTone(600, 0.15);
+        showToast(`💾 Бланк успешно зафиксирован и сохранен в облаке!`);
+    }
+
+    function calcItemSaleRub(item, outVal) {
+        const q = round2(outVal); if (q <= 0) return 0;
+        const bMl = parseFloat(item.bottleMl) || 0; 
+        const pMl = parseFloat(item.portionMl) || 0; 
+        const pPrice = parseFloat(item.portionPrice) || 0; 
+        const bPrice = parseFloat(item.guest) || 0;
+
+        if (bMl > 0 && pMl > 0 && pPrice > 0) {
+            const wholeBottles = Math.floor(q);
+            const fraction = round2(q - wholeBottles);
+            const ml = fraction * bMl;
+            const portions = Math.round(ml / pMl);
+            return Math.round(wholeBottles * bPrice + portions * pPrice);
+        }
+        return Math.round(q * bPrice);
+    }
+
+    async function onInlineBarCellChange(itemId, field, val) {
+        const p = myPerms(); 
+        if (!p.canDoOps && !p.canEditItems) return showToast('Нет прав!');
+        const rec = getBarDayRecord(itemId, activeBarDate); 
+
+        if (field === 'start') {
+            if (!p.canEditItems) {
+                showToast('❌ Изменять начальный остаток могут только пользователи с правом редактирования позиций!');
+                playAudioTone(220, 0.25, 'triangle');
+                renderStock();
+                return;
+            }
+            rec.start = Math.max(0, round2(val));
+        } else if (field === 'expDate') { 
+            rec.expDate = String(val || '').trim(); 
+        } else { 
+            rec[field] = Math.max(0, round2(val)); 
+        }
+        
+        propagateForward(activeBarDate);
+        updateSummaryCardsAndExpiredList(); 
+        renderAll(); 
+        syncToCloud(false);
+    }
+
+    async function onInlineDishesCellChange(itemId, field, val) {
+        const p = myPerms(); if (!p.canDoOps && !p.canEditItems) return showToast('Нет прав!');
+        const dDate = dishesMeta.date || getTodayLocal(); const rec = ensureDishesDayRecord(itemId, dDate); const item = items.find(i => String(i.id) === String(itemId));
+        if (field === 'count' && !p.canEditItems) {
+            showToast('❌ Изменять начальный остаток посуды могут только менеджер и директор!');
+            playAudioTone(220, 0.25, 'triangle');
+            renderStock();
+            return;
+        }
+        if (field === 'lossReason') rec.lossReason = String(val || '').trim(); else if (field !== 'count' || p.canEditItems) rec[field] = Math.max(0, round2(val));
+        if (item) item.qty = round2(round2(rec.count) + round2(rec.incoming) - round2(rec.loss));
+        updateSummaryCardsAndExpiredList(); renderAll(); syncToCloud(false);
+    }
+
+    function calcRawDayRevenue(dateStr, dept) { 
+        const dayObj = barDays[dateStr]; 
+        if (!dayObj) return 0; 
+        let sum = 0; 
+        const targetDepts = dept ? [dept] : ['BAR', 'RECEPTION'];
+        targetDepts.forEach(d => {
+            const deptObj = dayObj[d] ? dayObj[d] : (d === 'BAR' && dayObj.items ? dayObj : null);
+            if (deptObj && deptObj.items) {
+                items.filter(i => i.dept === d).forEach(item => { 
+                    const r = deptObj.items[item.id]; 
+                    if (r) {
+                        const salesQty = getActualItemSales(item, r);
+                        if (salesQty > 0) sum += calcItemSaleRub(item, salesQty);
+                    } 
+                }); 
+            }
+        });
+        return sum; 
+    }
+
+    function calcRawMonthRevenue(ym, dept) { 
+        let sum = 0; 
+        Object.keys(barDays).forEach(d => { 
+            if (d.startsWith(ym)) sum += calcRawDayRevenue(d, dept); 
+        }); 
+        return sum; 
+    }
+
+    async function resetMonthRevenueOnly() {
+        if (!myPerms().canUndoLogs) return showToast('Нет прав!');
+        const ym = activeBarDate.slice(0, 7); 
+        const deptName = currentDept === 'BAR' ? 'бара' : currentDept === 'RECEPTION' ? 'ресепшена' : 'отдела';
+        if (!confirm(`Обнулить выручку ${deptName} за месяц (${ym}) и день?`)) return;
+        revenueOffsets['MONTH_' + currentDept + '_' + ym] = calcRawMonthRevenue(ym, currentDept); 
+        revenueOffsets['DAY_' + currentDept + '_' + activeBarDate] = calcRawDayRevenue(activeBarDate, currentDept);
+        syncToCloud(true); 
+        updateSummaryCardsAndExpiredList(); 
+        showToast(`💸 Выручка ${deptName} за ${ym} обнулена!`);
+    }
+
+    async function clearBarStockOnly() {
+        if (!myPerms().canUndoLogs) return showToast('Нет прав!');
+        if (!confirm(`Обнулить остатки текущего отдела (${activeBarDate})?`)) return;
+        const deptObj = ensureBarDayStruct(activeBarDate, currentDept); 
+        items.filter(i => i.dept === currentDept).forEach(item => { 
+            deptObj.items[item.id] = { start: 0, incoming: 0, out: 0, exp: 0, expDate: "", transfersOut: 0, staffDebtOut: 0 }; 
+        });
+        propagateForward(activeBarDate); syncToCloud(true); renderAll(); showToast(`🧹 Остатки обнулены!`);
+    }
+    
+    async function archiveOldDaysKeepCurrentStock() {
+        if (!myPerms().canUndoLogs) return showToast('Нет прав!');
+        if (!confirm(`ЗАКРЫТИЕ МЕСЯЦА: Удалить старые бланки, сохр. текущие остатки и цены?`)) return;
+        const currentBar = ensureBarDayStruct(activeBarDate, 'BAR');
+        const currentRec = ensureBarDayStruct(activeBarDate, 'RECEPTION');
+        barDays = { [activeBarDate]: { BAR: currentBar, RECEPTION: currentRec } };
+        revenueOffsets = {}; syncToCloud(true); renderAll(); showToast('🗓 Старые дни очищены!');
+    }
+
+    async function clearLogsHistory() { if (!myPerms().canUndoLogs || !confirm('Очистить весь журнал операций?')) return; logs = []; chatLog = []; syncToCloud(true); renderAll(); showToast('🗑 Журнал очищен!'); }
+
+    function openSystemSettingsModal() {
+        if (!myPerms().canManageStaff && !myPerms().canEditItems) return showToast('Нет прав!');
+        const ann = document.getElementById('editSysAnnouncement'); if (ann) ann.value = sysAnnouncement || '';
+        const chkCarry = document.getElementById('settingShowCarryOver'); if (chkCarry) chkCarry.checked = !!sysSettings.showCarryOver;
+        const chkSound = document.getElementById('settingSoundFeedback'); if (chkSound) chkSound.checked = sysSettings.soundFeedback !== false;
+        document.getElementById('systemSettingsModal').classList.remove('hidden');
+    }
+    function closeSystemSettingsModal() { document.getElementById('systemSettingsModal').classList.add('hidden'); }
+    async function saveSystemSettings() {
+        const ann = document.getElementById('editSysAnnouncement'); sysAnnouncement = ann ? ann.value.trim() : "";
+        const chkCarry = document.getElementById('settingShowCarryOver'); if (chkCarry) sysSettings.showCarryOver = chkCarry.checked;
+        const chkSound = document.getElementById('settingSoundFeedback'); if (chkSound) sysSettings.soundFeedback = chkSound.checked;
+        safeSet('ld12_sys_settings', sysSettings); applySettingsEffects(); closeSystemSettingsModal(); renderAnnouncement(); syncToCloud(true); showToast('⚙️ Настройки сохранены!');
+    }
+    function renderAnnouncement() { const box = document.getElementById('liveAnnouncementBox'); const textEl = document.getElementById('liveAnnounceText'); if (!box || !textEl) return; if (sysAnnouncement) { textEl.innerText = sysAnnouncement; box.classList.remove('hidden'); } else { box.classList.add('hidden'); } }
+
+    function openLocationsModal() { 
+        if (!myPerms().canEditItems) return showToast('Нет прав!'); 
+        const deptSel = document.getElementById('locModalDept');
+        if (deptSel) deptSel.value = currentDept;
+        renderLocationsModalList(); 
+        document.getElementById('locationsModal').classList.remove('hidden'); 
+    }
+    function closeLocationsModal() { document.getElementById('locationsModal').classList.add('hidden'); }
+    
+    function renderLocationsModalList() {
+        const wrap = document.getElementById('locationsListWrap'); 
+        const deptSel = document.getElementById('locModalDept');
+        if (!wrap || !deptSel) return; 
+        const d = deptSel.value;
+        const locs = locations[d] || DEFAULT_LOCATIONS[d] || [];
+        
+        let html = '';
+        if (locs.length === 0) {
+            html = `<div style="padding:10px; color:var(--text-muted); text-align:center;">Нет локаций в этом отделе</div>`;
+        } else {
+            locs.forEach(locName => { 
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 8px; border-bottom:1px solid var(--border); font-size:13px;">
+                    <span>📍 <b>${locName}</b></span>
+                    <div style="display:flex; gap:4px;">
+                        <button type="button" class="btn-sm btn-edit" onclick="renameCustomLocation('${d}','${locName.replace(/'/g, "\\'")}')">✏️</button>
+                        <button type="button" class="btn-sm btn-del" onclick="deleteCustomLocation('${d}','${locName.replace(/'/g, "\\'")}')">🗑</button>
+                    </div>
+                </div>`; 
+            }); 
+        }
+        wrap.innerHTML = html;
+    }
+    async function addCustomLocation() { 
+        const deptSel = document.getElementById('locModalDept');
+        const d = deptSel ? deptSel.value : currentDept;
+        const name = document.getElementById('newLocName').value.trim(); 
+        if (!name) return; 
+        if (!locations[d]) locations[d] = []; 
+        if (locations[d].includes(name)) return showToast('Такая локация уже есть!');
+        locations[d].push(name); 
+        document.getElementById('newLocName').value = ''; 
+        renderLocationsModalList(); 
+        populateDepartmentFilters(); 
+        syncToCloud(true); 
+        showToast(`📍 Локация «${name}» добавлена!`); 
+    }
+    async function renameCustomLocation(d, oldName) {
+        const newName = prompt(`Переименовать локацию «${oldName}» в:`, oldName);
+        if (!newName || !newName.trim() || newName.trim() === oldName) return;
+        const trimmed = newName.trim();
+        if (locations[d].includes(trimmed)) return showToast('Локация с таким именем уже существует!');
+        
+        const idx = locations[d].indexOf(oldName);
+        if (idx !== -1) locations[d][idx] = trimmed;
+        
+        items.forEach(i => {
+            if (i.dept === d && i.loc === oldName) i.loc = trimmed;
+        });
+
+        renderLocationsModalList();
+        populateDepartmentFilters();
+        syncToCloud(true);
+        showToast('✅ Локация переименована!');
+    }
+    async function deleteCustomLocation(d, locName) { 
+        if ((locations[d] || []).length <= 1) return showToast('Нельзя удалить последнюю локацию отдела!');
+        if (!confirm(`Удалить локацию «${locName}»?`)) return;
+        locations[d] = locations[d].filter(x => x !== locName); 
+        renderLocationsModalList(); 
+        populateDepartmentFilters(); 
+        syncToCloud(true); 
+        showToast('🗑 Локация удалена!');
+    }
+
+    function openCategoriesModal() { 
+        if (!myPerms().canEditItems) return showToast('Нет прав!'); 
+        const deptSel = document.getElementById('catModalDept');
+        if (deptSel) deptSel.value = currentDept;
+        renderCategoriesModalList(); 
+        document.getElementById('categoriesModal').classList.remove('hidden'); 
+    }
+    function closeCategoriesModal() { 
+        document.getElementById('categoriesModal').classList.add('hidden'); 
+    }
+    function renderCategoriesModalList() {
+        const wrap = document.getElementById('categoriesListWrap'); 
+        const deptSel = document.getElementById('catModalDept');
+        if (!wrap || !deptSel) return; 
+        const d = deptSel.value;
+        const cats = customCategories[d] || DEFAULT_CATEGORIES[d] || [];
+        
+        let html = '';
+        if (cats.length === 0) {
+            html = `<div style="padding:10px; color:var(--text-muted); text-align:center;">Нет категорий</div>`;
+        } else {
+            cats.forEach(catName => { 
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 8px; border-bottom:1px solid var(--border); font-size:13px;">
+                    <span>🏷 <b>${catName}</b></span>
+                    <div style="display:flex; gap:4px;">
+                        <button type="button" class="btn-sm btn-edit" onclick="renameCustomCategory('${d}','${catName.replace(/'/g, "\\'")}')">✏️</button>
+                        <button type="button" class="btn-sm btn-del" onclick="deleteCustomCategory('${d}','${catName.replace(/'/g, "\\'")}')">🗑</button>
+                    </div>
+                </div>`; 
+            }); 
+        }
+        wrap.innerHTML = html;
+    }
+    async function addCustomCategory() { 
+        const deptSel = document.getElementById('catModalDept');
+        const d = deptSel ? deptSel.value : currentDept;
+        const name = document.getElementById('newCatName').value.trim(); 
+        if (!name) return; 
+        if (!customCategories[d]) customCategories[d] = []; 
+        if (customCategories[d].includes(name)) return showToast('Такая категория уже есть!');
+        customCategories[d].push(name); 
+        document.getElementById('newCatName').value = ''; 
+        renderCategoriesModalList(); 
+        populateDepartmentFilters(); 
+        syncToCloud(true); 
+        showToast(`🏷 Категория «${name}» добавлена!`); 
+    }
+    async function renameCustomCategory(d, oldName) {
+        const newName = prompt(`Переименовать категорию «${oldName}» в:`, oldName);
+        if (!newName || !newName.trim() || newName.trim() === oldName) return;
+        const trimmed = newName.trim();
+        if (customCategories[d].includes(trimmed)) return showToast('Категория с таким именем уже существует!');
+        
+        const idx = customCategories[d].indexOf(oldName);
+        if (idx !== -1) customCategories[d][idx] = trimmed;
+        
+        items.forEach(i => {
+            if (i.dept === d && i.cat === oldName) i.cat = trimmed;
+        });
+
+        renderCategoriesModalList();
+        populateDepartmentFilters();
+        syncToCloud(true);
+        showToast('✅ Категория переименована!');
+    }
+    async function deleteCustomCategory(d, catName) { 
+        if ((customCategories[d] || []).length <= 1) return showToast('Нельзя удалить последнюю категорию!');
+        if (!confirm(`Удалить категорию «${catName}»?`)) return;
+        customCategories[d] = customCategories[d].filter(x => x !== catName); 
+        renderCategoriesModalList(); 
+        populateDepartmentFilters(); 
+        syncToCloud(true); 
+        showToast('🗑 Категория удалена!');
+    }
+
+    async function onDishesMetaChange(showMsg) { 
+        dishesMeta.date = document.getElementById('dishesDateInput').value || getTodayLocal(); 
+        dishesMeta.author = document.getElementById('dishesAuthorInput').value.trim(); 
+        syncToCloud(true); 
+        renderAll(); 
+        if (showMsg) showToast(`💾 Инвентаризация посуды сохранена!`); 
+    }
+    
+    function loadMetaInputsSafely() {
+        const activeEl = document.activeElement; 
+        const dateIn = document.getElementById('activeDateInput'); 
+        if (dateIn && activeEl !== dateIn) dateIn.value = activeBarDate;
+
+        const deptObj = ensureBarDayStruct(activeBarDate, currentDept);
+        const bAuth = document.getElementById('barAuthorInput'); 
+        if (bAuth && activeEl !== bAuth) bAuth.value = deptObj.author || '';
+        
+        const bMgr = document.getElementById('barManagerInput'); 
+        if (bMgr && activeEl !== bMgr) bMgr.value = deptObj.manager || '';
+
+        const dDate = document.getElementById('dishesDateInput'); 
+        if (dDate && activeEl !== dDate) dDate.value = dishesMeta.date || getTodayLocal();
+        const dAuth = document.getElementById('dishesAuthorInput'); 
+        if (dAuth && activeEl !== dAuth) dAuth.value = dishesMeta.author || '';
+    }
+
+    function switchDepartment(dept) {
+        if (currentUser) {
+            const r = currentUser.role;
+            if (r === 'RECEPTION_ADMIN' && dept !== 'RECEPTION') {
+                return showToast('❌ У вас доступ только к отделу Ресепшен!');
+            }
+            if ((r === 'WAIT_BAR' || r === 'SEN_WAIT') && dept === 'RECEPTION') {
+                return showToast('❌ Доступ к отделу Ресепшен для официантов закрыт!');
+            }
+        }
+        currentDept = dept; 
+        safeSet('ld12_dept', dept); 
+        const isBar = dept === 'BAR'; 
+        const isRec = dept === 'RECEPTION';
+        
+        document.getElementById('mainHeader').classList.toggle('bar-mode', isBar);
+        document.getElementById('mainHeader').classList.toggle('reception-mode', isRec);
+        
+        document.getElementById('btnDeptDishes').className = 'dept-btn ' + (dept === 'DISHES' ? 'active-dishes' : '');
+        document.getElementById('btnDeptBar').className = 'dept-btn ' + (isBar ? 'active-bar' : '');
+        document.getElementById('btnDeptReception').className = 'dept-btn ' + (isRec ? 'active-reception' : '');
+        
+        document.getElementById('btnSubmitOp').className = 'btn ' + (isBar ? 'btn-bar' : isRec ? 'btn-rec' : '');
+        document.getElementById('barDateBox').classList.toggle('hidden', dept === 'DISHES');
+        document.getElementById('expiredSummaryBox').classList.toggle('hidden', dept === 'DISHES');
+        document.getElementById('dishesMetaBox').classList.toggle('hidden', dept !== 'DISHES');
+        document.getElementById('unitModeGroup').classList.toggle('hidden', !isBar && !isRec);
+        
+        const lblAuth = document.getElementById('lblAuthorTitle');
+        const lblDate = document.getElementById('lblDateBoxTitle');
+        if (lblAuth) {
+            lblAuth.innerText = isBar ? '✍️ Ответственный смены бара (обязательно):' : '✍️ Администратор смены ресепшен (обязательно):';
+        }
+        if (lblDate) {
+            lblDate.innerText = isBar ? '📅 Дата ревизии бара:' : '📅 Дата ревизии ресепшена:';
+        }
+
+        loadMetaInputsSafely(); 
+        applySettingsEffects();
+        
+        const titles = { BAR: `🍸 Ревизия и прайс бара на дату: ${activeBarDate}`, RECEPTION: `🏨 Ревизия ресепшена на дату: ${activeBarDate}`, DISHES: `🍽 Инвентаризация посуды и инвентаря` };
+        document.getElementById('stockPanelTitle').innerText = titles[dept] || '';
+
+        const opTitles = { BAR: `🍸 Провести операцию: Бар «Глобус»`, RECEPTION: `🏨 Провести операцию: Ресепшен`, DISHES: `🍽 Провести операцию: Посуда и Инвентарь` };
+        document.getElementById('opsPanelTitle').innerText = opTitles[dept] || 'Провести операцию';
+        const opLbls = { BAR: `Выберите напиток / товар (Бар «Глобус»)`, RECEPTION: `Выберите товар или услугу (Ресепшен)`, DISHES: `Выберите посуду или инвентарь` };
+        const lblOpDept = document.getElementById('lblOpDeptSelectTitle');
+        if (lblOpDept) lblOpDept.innerText = opLbls[dept] || 'Выберите позицию';
+        
+        const headerRow = document.getElementById('tableHeaderRow');
+        if (isBar || isRec) {
+            headerRow.innerHTML = `<th>Наименование и Партии</th><th>Объем / Цена</th><th>Начало</th><th>Приход</th><th>Расход</th><th>Списано</th><th>Конец / Остаток</th><th>Выручка</th><th>Изм.</th>`;
+        } else {
+            headerRow.innerHTML = `<th>Наименование</th><th>Категория / Локация</th><th>Было</th><th>Приход</th><th>Списано</th><th>Итог</th><th>Бой (₽)</th><th>Управление</th>`;
+        }
+        populateDepartmentFilters(); 
+        renderAll();
+    }
+
+    function populateDepartmentFilters() {
+        const locs = locations[currentDept] || DEFAULT_LOCATIONS[currentDept]; 
+        const cats = customCategories[currentDept] || DEFAULT_CATEGORIES[currentDept]; 
+        const ops = DEPT_OPS[currentDept];
+        document.getElementById('filterLoc').innerHTML = `<option value="ALL">Все локации</option>` + locs.map(l => `<option value="${l}">${l}</option>`).join('');
+        document.getElementById('filterCat').innerHTML = `<option value="ALL">Все категории</option>` + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+        document.getElementById('opTypeSelect').innerHTML = ops.map(o => `<option value="${o.val}">${o.text}</option>`).join('');
+        
+        const allCombinedLocs = Array.from(new Set([...(locations.BAR || []), ...(locations.RECEPTION || []), ...(locations.DISHES || [])]));
+        const targetLocEl = document.getElementById('opTargetLoc'); if (targetLocEl) targetLocEl.innerHTML = allCombinedLocs.map(l => `<option value="${l}">Куда: ${l}</option>`).join('');
+        const fromLocEl = document.getElementById('opFromLoc'); if (fromLocEl) fromLocEl.innerHTML = (locations[currentDept] || allCombinedLocs).map(l => `<option value="${l}">Откуда: ${l}</option>`).join('');
+        
+        renderCategoryChips(cats); 
+        updateOpFields();
+    }
+    function renderCategoryChips(cats) {
+        const wrap = document.getElementById('categoryChipsWrap'); if (!wrap) return; const curCat = document.getElementById('filterCat').value || 'ALL';
+        wrap.innerHTML = `<button type="button" class="cat-chip ${curCat==='ALL'?'active':''}" onclick="onChipCatClick('ALL')">Все</button>` + cats.map(c => `<button type="button" class="cat-chip ${curCat===c?'active':''}" onclick="onChipCatClick('${c}')">${c}</button>`).join('');
+    }
+    function onChipCatClick(catVal) { document.getElementById('filterCat').value = catVal; renderCategoryChips(customCategories[currentDept]); renderStock(); }
+    function onFilterCatSelect(catVal) { renderCategoryChips(customCategories[currentDept]); renderStock(); }
+    function onSearchInput(val) { const btn = document.getElementById('searchClearBtn'); if (btn) btn.style.display = val ? 'block' : 'none'; renderStock(); }
+    function clearSearch() { document.getElementById('searchBox').value = ''; document.getElementById('searchClearBtn').style.display = 'none'; renderStock(); }
+    
+    function toggleZeroFilter() { 
+        showZeroOnly = !showZeroOnly; 
+        document.getElementById('btnFilterZero').classList.toggle('btn-active-danger', showZeroOnly); 
+        renderStock(); 
+        showToast(showZeroOnly ? '⚠️ Показаны только закончившиеся позиции (остаток 0)' : '📦 Показаны все позиции');
+    }
+    function toggleExpFilter() { 
+        showExpiringOnly = !showExpiringOnly; 
+        document.getElementById('btnFilterExp').classList.toggle('btn-active-danger', showExpiringOnly); 
+        renderStock(); 
+        showToast(showExpiringOnly ? '⏳ Показаны позиции со списанием / сроками' : '📦 Показаны все позиции');
+    }
+
+    function filterOpItemsDropdown() {
+        const q = (document.getElementById('opSearchInput')?.value || '').trim().toLowerCase();
+        const clearBtn = document.getElementById('opSearchClearBtn');
+        if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+        const opItemSel = document.getElementById('opItemSelect');
+        if (!opItemSel) return;
+        const prevVal = opItemSel.value;
+
+        const deptItems = items.filter(i => (i.dept || 'DISHES') === currentDept && (
+            !q || i.name.toLowerCase().includes(q) || (i.cat || '').toLowerCase().includes(q) || (i.loc || '').toLowerCase().includes(q)
+        ));
+
+        if (deptItems.length === 0) {
+            opItemSel.innerHTML = `<option value="">— Ничего не найдено по запросу «${q}» —</option>`;
+            return;
+        }
+
+        const grouped = {};
+        deptItems.forEach(i => {
+            const c = i.cat || 'Прочее';
+            if (!grouped[c]) grouped[c] = [];
+            grouped[c].push(i);
+        });
+
+        let html = '';
+        Object.keys(grouped).forEach(catName => {
+            html += `<optgroup label="📁 ${catName}">`;
+            grouped[catName].forEach(i => {
+                let end = 0;
+                if (i.dept === 'BAR' || i.dept === 'RECEPTION') {
+                    const rec = getBarDayRecord(i.id, activeBarDate);
+                    end = round2(round2(rec.start) + round2(rec.incoming) - round2(rec.out) - round2(rec.exp));
+                } else {
+                    const dDate = dishesMeta.date || getTodayLocal();
+                    const dRec = ensureDishesDayRecord(i.id, dDate);
+                    end = round2(round2(dRec.count) + round2(dRec.incoming) - round2(dRec.loss));
+                }
+                const formattedEnd = formatStockDisplay(i, end);
+                html += `<option value="${i.id}">${i.name} (${i.vol || i.loc}) — Остаток: ${formattedEnd}</option>`;
+            });
+            html += `</optgroup>`;
+        });
+
+        opItemSel.innerHTML = html;
+        if (prevVal && deptItems.some(i => String(i.id) === String(prevVal))) {
+            opItemSel.value = prevVal;
+        }
+        updateUnitModeOptions();
+    }
+
+    function clearOpSearch() {
+        const inp = document.getElementById('opSearchInput');
+        if (inp) inp.value = '';
+        filterOpItemsDropdown();
+    }
+
+    function getAllCombinedLocations() { return Array.from(new Set([...(locations.DISHES || []), ...(locations.BAR || []), ...(locations.RECEPTION || [])])); }
+    function populateLoginDropdowns() {
+        const sel = document.getElementById('loginUserSelect');
+        if (sel && users && users.length > 0) { const cur = sel.value; sel.innerHTML = users.map(u => { const r = getRoleObj(u.role); return `<option value="${u.id}">${u.name} (${r.name})</option>`; }).join(''); if (cur && users.some(u => String(u.id) === String(cur))) sel.value = cur; }
+        const regRoleSel = document.getElementById('regRole');
+        if (regRoleSel && roles && roles.length > 0) { const safeRoles = roles.filter(r => !r.canManageStaff); regRoleSel.innerHTML = (safeRoles.length ? safeRoles : roles).map(r => `<option value="${r.code}">${r.name}</option>`).join(''); }
+        const allLocs = getAllCombinedLocations();
+        const regHallSel = document.getElementById('regHall'); if (regHallSel && allLocs.length) regHallSel.innerHTML = allLocs.map(l => `<option value="${l}">${l}</option>`).join('');
+        const editHallSel = document.getElementById('editUserHall'); if (editHallSel && allLocs.length) editHallSel.innerHTML = allLocs.map(l => `<option value="${l}">${l}</option>`).join('');
+    }
+
+    function switchAuth(mode) { document.getElementById('tabBtnLogin').classList.toggle('active', mode === 'login'); document.getElementById('tabBtnReg').classList.toggle('active', mode === 'register'); document.getElementById('loginBox').classList.toggle('hidden', mode !== 'login'); document.getElementById('regBox').classList.toggle('hidden', mode !== 'register'); }
+    function doLogin() {
+        const uid = document.getElementById('loginUserSelect').value; const pin = document.getElementById('loginPin').value.trim(); const user = users.find(u => String(u.id) === String(uid));
+        if (!user || String(user.pin) !== String(pin)) return showToast('❌ Неверный ПИН-код!');
+        currentUser = user; safeSet('ld12_session', currentUser); document.getElementById('loginPin').value = ''; playAudioTone(587.33, 0.12); updateAuthUI(); showToast('Вход выполнен: ' + currentUser.name);
+    }
+    async function doRegister() {
+        const name = document.getElementById('regName').value.trim(); const phoneEl = document.getElementById('regPhone'); const phone = phoneEl ? phoneEl.value.trim() : ''; const role = document.getElementById('regRole').value; const hall = document.getElementById('regHall').value; const pin = document.getElementById('regPin').value.trim();
+        if (!name || !pin) return showToast('Заполните ФИО и ПИН-код!');
+        const newUser = { id: Date.now(), name, phone, role, hall, pin }; users.push(newUser); currentUser = newUser; safeSet('ld12_session', currentUser);
+        syncToCloud(true); populateLoginDropdowns(); updateAuthUI(); showToast('✅ Сотрудник зарегистрирован!');
+    }
+    function doLogout() { currentUser = null; safeSet('ld12_session', null); updateAuthUI(); }
+
+    function updateAuthUI() {
+        const screen = document.getElementById('authScreen'); document.getElementById('cloudUrlInput').value = cloudBaseUrl || '';
+        if (!currentUser) { populateLoginDropdowns(); screen.classList.remove('hidden'); } else {
+            screen.classList.add('hidden'); const p = myPerms();
+            document.getElementById('uiUserName').innerText = currentUser.name; const roleBadge = document.getElementById('uiUserRole'); roleBadge.innerText = p.name; roleBadge.style.background = p.color || '#d97706';
+            
+            const deptSwitcher = document.getElementById('deptSwitcherBox');
+            const btnRec = document.getElementById('btnDeptReception');
+            const btnBar = document.getElementById('btnDeptBar');
+            const btnDish = document.getElementById('btnDeptDishes');
+            
+            if (currentUser.role === 'RECEPTION_ADMIN') {
+                btnRec.style.display = 'block'; btnBar.style.display = 'none'; btnDish.style.display = 'none';
+                deptSwitcher.style.gridTemplateColumns = '1fr'; currentDept = 'RECEPTION';
+            } else if (currentUser.role === 'WAIT_BAR' || currentUser.role === 'SEN_WAIT') {
+                btnRec.style.display = 'none'; btnBar.style.display = 'block'; btnDish.style.display = 'block';
+                deptSwitcher.style.gridTemplateColumns = '1fr 1fr'; if (currentDept === 'RECEPTION') currentDept = 'BAR';
+            } else {
+                btnRec.style.display = 'block'; btnBar.style.display = 'block'; btnDish.style.display = 'block';
+                deptSwitcher.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            }
+
+            document.getElementById('btnAddTop').classList.toggle('hidden', !p.canEditItems);
+            document.getElementById('btnLocModalTop').classList.toggle('hidden', !p.canEditItems);
+            document.getElementById('btnCatModalTop').classList.toggle('hidden', !p.canEditItems);
+            document.getElementById('btnSettingsTop').classList.toggle('hidden', !(p.canManageStaff || p.canEditItems));
+            document.getElementById('btnAddStaffTop').classList.toggle('hidden', !p.canManageStaff);
+            document.getElementById('rolesConstructorBlock').classList.toggle('hidden', !p.canManageStaff);
+            document.getElementById('dangerOpsBlock').classList.toggle('hidden', !p.canUndoLogs);
+            document.getElementById('cardDaySales').classList.toggle('hidden', !p.canViewFinances);
+            document.getElementById('cardMonthSales').classList.toggle('hidden', !p.canViewFinances);
+            document.getElementById('opsNoPermWarn').classList.toggle('hidden', p.canDoOps);
+            document.getElementById('opsFormWrap').classList.toggle('hidden', !p.canDoOps);
+            
+            renderAnnouncement(); switchDepartment(currentDept); applySettingsEffects();
+        }
+    }
+
+    function openPanel(panelId, btn) { document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); document.getElementById(panelId).classList.add('active'); btn.classList.add('active'); playAudioTone(500, 0.04); if(panelId==='tab-chat'){ setTimeout(() => { const box = document.getElementById('chatMessages'); if(box) box.scrollTop = box.scrollHeight; }, 50); } }
+
+    function filterOrderModalItems() {
+        const q = (document.getElementById('orderSearchInput')?.value || '').trim().toLowerCase();
+        const sel = document.getElementById('orderItemSelect');
+        if (!sel) return;
+        const deptItems = items.filter(i => (i.dept || 'DISHES') === currentDept && (
+            !q || i.name.toLowerCase().includes(q) || (i.cat || '').toLowerCase().includes(q) || (i.loc || '').toLowerCase().includes(q)
+        ));
+        if (!deptItems.length) {
+            sel.innerHTML = `<option value="">— Позиции не найдены —</option>`;
+            return;
+        }
+        sel.innerHTML = deptItems.map(i => `<option value="${i.id}">${i.name} (${i.vol || i.loc})</option>`).join('');
+    }
+
+    function openOrderModal() { 
+        const sInp = document.getElementById('orderSearchInput');
+        if (sInp) sInp.value = '';
+        filterOrderModalItems();
+        document.getElementById('orderQty').value = 5; 
+        document.getElementById('orderComment').value = ''; 
+        document.getElementById('orderModal').classList.remove('hidden'); 
+    }
+    function closeOrderModal() { document.getElementById('orderModal').classList.add('hidden'); }
+    async function submitBarOrder() {
+        const itemId = document.getElementById('orderItemSelect').value; const qty = parseInt(document.getElementById('orderQty').value) || 1; const comment = document.getElementById('orderComment').value.trim(); const item = items.find(i => String(i.id) === String(itemId)); if (!item) return;
+        barOrders.push({ id: Date.now(), date: new Date().toLocaleDateString('ru-RU') + ' ' + new Date().toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' }), author: currentUser.name, itemId: item.id, itemName: item.name + ' (' + (item.vol || '') + ')', qty, unit: item.unit || 'шт.', comment, status: 'В обработке' });
+        closeOrderModal(); syncToCloud(true); renderAll(); playAudioTone(650, 0.1); showToast('📝 Заявка отправлена!');
+    }
+    async function updateOrderStatus(orderId, newStatus) { if (!myPerms().canEditItems && !myPerms().canDoOps) return showToast('Нет прав!'); const ord = barOrders.find(o => String(o.id) === String(orderId)); if (ord) { ord.status = newStatus; syncToCloud(true); renderAll(); showToast(`✅ Статус: ${newStatus}`); } }
+    async function removeBarOrder(orderId) { if (!myPerms().canUndoLogs && !myPerms().canEditItems) return; barOrders = barOrders.filter(o => String(o.id) !== String(orderId)); syncToCloud(true); renderAll(); }
+
+    function openRoleModal(roleCode) {
+        if (!myPerms().canManageStaff) return; const modal = document.getElementById('roleModal');
+        if (roleCode) {
+            const r = getRoleObj(roleCode); document.getElementById('editRoleCode').value = r.code; document.getElementById('editRoleName').value = r.name; document.getElementById('editRoleColor').value = r.color || '#d97706'; 
+            document.getElementById('permEditItems').checked = !!r.canEditItems; 
+            document.getElementById('permDoOps').checked = !!r.canDoOps; 
+            document.getElementById('permSelectStaff').checked = !!r.canSelectStaff; 
+            document.getElementById('permUndoOwnLogs').checked = r.canUndoOwnLogs !== false;
+            document.getElementById('permUndoLogs').checked = !!r.canUndoLogs; 
+            document.getElementById('permManageStaff').checked = !!r.canManageStaff; 
+            document.getElementById('permViewFinances').checked = !!r.canViewFinances;
+        } else {
+            document.getElementById('editRoleCode').value = ''; document.getElementById('editRoleName').value = ''; document.getElementById('editRoleColor').value = '#15803d'; 
+            document.getElementById('permEditItems').checked = false; 
+            document.getElementById('permDoOps').checked = true; 
+            document.getElementById('permSelectStaff').checked = true; 
+            document.getElementById('permUndoOwnLogs').checked = true;
+            document.getElementById('permUndoLogs').checked = false; 
+            document.getElementById('permManageStaff').checked = false; 
+            document.getElementById('permViewFinances').checked = false;
+        }
+        modal.classList.remove('hidden');
+    }
+    function closeRoleModal() { document.getElementById('roleModal').classList.add('hidden'); }
+    async function saveRoleModal() {
+        const codeVal = document.getElementById('editRoleCode').value; const name = document.getElementById('editRoleName').value.trim(); const color = document.getElementById('editRoleColor').value;
+        const perms = { 
+            canEditItems: document.getElementById('permEditItems').checked, 
+            canDoOps: document.getElementById('permDoOps').checked, 
+            canSelectStaff: document.getElementById('permSelectStaff').checked, 
+            canUndoOwnLogs: document.getElementById('permUndoOwnLogs').checked,
+            canUndoLogs: document.getElementById('permUndoLogs').checked, 
+            canManageStaff: document.getElementById('permManageStaff').checked, 
+            canViewFinances: document.getElementById('permViewFinances').checked 
+        };
+        if (!name) return showToast('Введите название должности!');
+        if (codeVal) { const r = roles.find(x => x.code === codeVal); if (r) Object.assign(r, { name, color }, perms); } else { roles.push({ code: 'ROLE_' + Date.now(), name, color, ...perms }); }
+        closeRoleModal(); populateLoginDropdowns(); syncToCloud(true); renderAll(); updateAuthUI(); playAudioTone(600, 0.1); showToast('✅ Должность сохранена!');
+    }
+    async function removeRole(code) { 
+        if (!myPerms().canManageStaff) return showToast('Нет прав!');
+        if (roles.length <= 1) return showToast('Нельзя удалить последнюю должность!');
+        if (!confirm('Удалить эту должность?')) return;
+        roles = roles.filter(r => r.code !== code); 
+        populateLoginDropdowns();
+        syncToCloud(true); 
+        renderAll(); 
+        showToast('🗑 Должность удалена!');
+    }
+
+    function populateModalCategories() {
+        const dept = document.getElementById('editItemDept').value; const locs = locations[dept] || DEFAULT_LOCATIONS[dept]; const cats = customCategories[dept] || DEFAULT_CATEGORIES[dept];
+        document.getElementById('editItemCat').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join(''); document.getElementById('editItemLoc').innerHTML = locs.map(l => `<option value="${l}">${l}</option>`).join('');
+    }
+    function openItemModal(itemId) {
+        if (!myPerms().canEditItems) return showToast('Нет прав!'); const modal = document.getElementById('itemModal');
+        if (itemId) {
+            const item = items.find(i => String(i.id) === String(itemId)); if (!item) return;
+            document.getElementById('editItemId').value = item.id; document.getElementById('editItemDept').value = item.dept || 'BAR'; populateModalCategories();
+            document.getElementById('editItemName').value = item.name; document.getElementById('editItemNote').value = item.note || ''; document.getElementById('editItemVol').value = item.vol || ''; document.getElementById('editItemCat').value = item.cat; document.getElementById('editItemLoc').value = item.loc; document.getElementById('editItemGuest').value = item.guest || 0; document.getElementById('editItemPortionPrice').value = item.portionPrice || 0; 
+            document.getElementById('editItemBottleMl').value = item.bottleMl || 0;
+            document.getElementById('editItemPortionMl').value = item.portionMl || 50;
+            if (item.dept === 'BAR' || item.dept === 'RECEPTION') { const rec = getBarDayRecord(item.id, activeBarDate); document.getElementById('editItemStart').value = rec.start; } else { const dDate = dishesMeta.date || getTodayLocal(); const dRec = ensureDishesDayRecord(item.id, dDate); document.getElementById('editItemStart').value = dRec.count; }
+        } else {
+            document.getElementById('editItemId').value = ''; document.getElementById('editItemDept').value = currentDept; populateModalCategories(); document.getElementById('editItemName').value = ''; document.getElementById('editItemNote').value = ''; document.getElementById('editItemVol').value = '0,5 л'; document.getElementById('editItemGuest').value = 1500; document.getElementById('editItemPortionPrice').value = 150; document.getElementById('editItemBottleMl').value = 500; document.getElementById('editItemPortionMl').value = 50; document.getElementById('editItemStart').value = 1;
+        }
+        modal.classList.remove('hidden');
+    }
+    function closeItemModal() { document.getElementById('itemModal').classList.add('hidden'); }
+    async function saveItemModal() {
+        const idVal = document.getElementById('editItemId').value; const dept = document.getElementById('editItemDept').value; const name = document.getElementById('editItemName').value.trim(); const note = document.getElementById('editItemNote').value.trim(); const vol = document.getElementById('editItemVol').value.trim(); const cat = document.getElementById('editItemCat').value; const loc = document.getElementById('editItemLoc').value; const guest = round2(document.getElementById('editItemGuest').value); const portionPrice = round2(document.getElementById('editItemPortionPrice').value); const bottleMl = round2(document.getElementById('editItemBottleMl').value); const portionMl = round2(document.getElementById('editItemPortionMl').value); const val1 = round2(document.getElementById('editItemStart').value);
+        if (!name) return showToast('Введите наименование!');
+        let targetId = idVal; let targetItem = null;
+        const unitName = bottleMl > 0 ? 'бут.' : 'шт.';
+        if (idVal) { targetItem = items.find(i => String(i.id) === String(idVal)); if (targetItem) Object.assign(targetItem, { dept, name, note, vol, cat, loc, guest, portionPrice, bottleMl, portionMl, unit: unitName }); } 
+        else { targetId = Date.now(); targetItem = { id: targetId, dept, name, note, vol, cat, loc, unit: unitName, guest, portionPrice, bottleMl, portionMl, qty: val1, min: 0, batches: [] }; items.push(targetItem); }
+        if (dept === 'BAR' || dept === 'RECEPTION') { const rec = getBarDayRecord(targetId, activeBarDate); rec.start = val1; } else { const dDate = dishesMeta.date || getTodayLocal(); const dRec = ensureDishesDayRecord(targetId, dDate); dRec.count = val1; if (targetItem) targetItem.qty = round2(val1 + dRec.incoming - dRec.loss); }
+        closeItemModal(); syncToCloud(true); renderAll(); showToast('✅ Сохранено!');
+    }
+    async function removeItem(itemId) { if (!myPerms().canEditItems || !confirm('Удалить позицию?')) return; items = items.filter(i => String(i.id) !== String(itemId)); syncToCloud(true); renderAll(); }
+
+    function openUserModal(userId) {
+        if (!myPerms().canManageStaff) return; populateLoginDropdowns(); document.getElementById('editUserRole').innerHTML = roles.map(r => `<option value="${r.code}">${r.name}</option>`).join(''); const modal = document.getElementById('userModal');
+        if (userId) { const u = users.find(x => String(x.id) === String(userId)); if (!u) return; document.getElementById('editUserId').value = u.id; document.getElementById('editUserName').value = u.name; document.getElementById('editUserPhone').value = u.phone || ''; document.getElementById('editUserPin').value = u.pin; document.getElementById('editUserRole').value = u.role; document.getElementById('editUserHall').value = u.hall; } 
+        else { document.getElementById('editUserId').value = ''; document.getElementById('editUserName').value = ''; document.getElementById('editUserPhone').value = ''; document.getElementById('editUserPin').value = '0000'; document.getElementById('editUserRole').value = 'WAIT_BAR'; }
+        modal.classList.remove('hidden');
+    }
+    function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); }
+    async function saveUserModal() {
+        const idVal = document.getElementById('editUserId').value; 
+        const name = document.getElementById('editUserName').value.trim(); 
+        const phone = document.getElementById('editUserPhone').value.trim(); 
+        const pin = document.getElementById('editUserPin').value.trim(); 
+        const role = document.getElementById('editUserRole').value; 
+        const hall = document.getElementById('editUserHall').value;
+        if (!name || !pin) return showToast('Заполните ФИО и ПИН!');
+        
+        if (idVal) { 
+            const u = users.find(x => String(x.id) === String(idVal)); 
+            if (u) {
+                Object.assign(u, { name, phone, pin, role, hall });
+                if (currentUser && String(currentUser.id) === String(idVal)) {
+                    currentUser = { ...currentUser, name, phone, pin, role, hall };
+                    safeSet('ld12_session', currentUser);
+                }
+            }
+        } else { 
+            users.push({ id: Date.now(), name, phone, pin, role, hall }); 
+        }
+        
+        closeUserModal(); 
+        populateLoginDropdowns(); 
+        syncToCloud(true); 
+        renderAll();
+        updateAuthUI(); 
+        showToast('✅ Данные сотрудника сохранены и синхронизированы!');
+    }
+    
+    async function removeUser(userId) { 
+        if (!myPerms().canManageStaff) return showToast('Нет прав!');
+        if (currentUser && String(userId) === String(currentUser.id)) return showToast('Нельзя удалить самого себя!');
+        if (!confirm('Вы действительно хотите удалить этого сотрудника?')) return;
+        
+        users = users.filter(u => String(u.id) !== String(userId)); 
+        populateLoginDropdowns(); 
+        syncToCloud(true); 
+        renderAll(); 
+        showToast('🗑 Сотрудник удален!');
+    }
+
+    function updateOpFields() {
+        const type = document.getElementById('opTypeSelect').value;
+        document.getElementById('transferGroup').classList.toggle('hidden', type !== 'MOVE');
+        document.getElementById('expDateGroup').classList.toggle('hidden', type !== 'EXPIRED' && type !== 'IN');
+        const selfBuyGroup = document.getElementById('selfBuyGroup'); if (selfBuyGroup) selfBuyGroup.classList.toggle('hidden', type !== 'SELF_BUY');
+        updateUnitModeHint();
+    }
+    function updateUnitModeOptions() {
+        const itemId = document.getElementById('opItemSelect').value; 
+        const item = items.find(i => String(i.id) === String(itemId)); 
+        const fromLocEl = document.getElementById('opFromLoc'); 
+        if (item && fromLocEl) fromLocEl.value = item.loc;
+        
+        const unitModeGroup = document.getElementById('unitModeGroup');
+        const unitModeSel = document.getElementById('opUnitMode');
+        const isMl = item && (item.bottleMl || 0) > 0;
+        
+        if (unitModeGroup && unitModeSel) {
+            if (!isMl) {
+                unitModeSel.value = 'BOTTLE';
+                unitModeGroup.classList.add('hidden');
+            } else {
+                unitModeGroup.classList.remove('hidden');
+            }
+        }
+
+        const qWrap = document.getElementById('quickQtyButtons');
+        if (qWrap) {
+            if (isMl) {
+                qWrap.innerHTML = `
+                    <button type="button" class="btn-sm btn-outline" onclick="setQuickQty(0.05)">50 мл</button>
+                    <button type="button" class="btn-sm btn-outline" onclick="setQuickQty(0.1)">100 мл</button>
+                    <button type="button" class="btn-sm btn-outline" onclick="setQuickQty(0.15)">150 мл</button>
+                    <button type="button" class="btn-sm btn-outline" onclick="setQuickQty(1)">1 бут</button>
+                `;
+            } else {
+                qWrap.innerHTML = `
+                    <button type="button" class="btn-sm btn-outline" onclick="setQuickQty(1)">1 шт/бут</button>
+                    <button type="button" class="btn-sm btn-outline" onclick="setQuickQty(2)">2 шт</button>
+                    <button type="button" class="btn-sm btn-outline" onclick="setQuickQty(5)">+5 шт</button>
+                    <button type="button" class="btn-sm btn-outline" onclick="setQuickQty(10)">+10 шт</button>
+                `;
+            }
+        }
+        updateUnitModeHint();
+    }
+
+    function updateUnitModeHint() {
+        const itemId = document.getElementById('opItemSelect').value; 
+        const item = items.find(i => String(i.id) === String(itemId)); 
+        const type = document.getElementById('opTypeSelect').value; 
+        const mode = document.getElementById('opUnitMode').value; 
+        const lbl = document.getElementById('lblOpQty');
+        const isMl = item && (item.bottleMl || 0) > 0;
+        
+        if (type === 'AUDIT') { 
+            lbl.innerText = '🔍 Фактический остаток на полке (в бут / шт)'; 
+        } else if (type === 'SELF_BUY') { 
+            lbl.innerText = '🛒 Сколько единиц / бутылок докуплено?'; 
+        } else if (isMl && mode === 'PORTION_ML') { 
+            lbl.innerText = `Доля бутылки для мл (0.05 = 50мл, 0.1 = 100мл)`; 
+        } else { 
+            lbl.innerText = 'Количество (целых бутылок / шт.)'; 
+        }
+    }
+
+    async function submitOperation() {
+        if (!myPerms().canDoOps) return;
+        const itemId = document.getElementById('opItemSelect').value; 
+        const type = document.getElementById('opTypeSelect').value; 
+        const rawQty = round2(document.getElementById('opQty').value); 
+        const unitMode = document.getElementById('opUnitMode').value; 
+        const fromLoc = document.getElementById('opFromLoc') ? document.getElementById('opFromLoc').value : ''; 
+        const targetLoc = document.getElementById('opTargetLoc').value; 
+        const batchFrom = document.getElementById('opBatchFrom') ? document.getElementById('opBatchFrom').value : ''; 
+        const batchTo = document.getElementById('opBatchTo') ? document.getElementById('opBatchTo').value : ''; 
+        const staffId = document.getElementById('opStaffSelect').value; 
+        let comment = document.getElementById('opComment').value.trim();
+        
+        const item = items.find(i => String(i.id) === String(itemId)); 
+        if (!item) return showToast('Выберите позицию из списка!');
+        if (type !== 'AUDIT' && rawQty <= 0) return showToast('Укажите количество!');
+
+        let qty = 0, sum = 0;
+        const bMl = parseFloat(item.bottleMl) || 0;
+        const isMlItem = (item.dept === 'BAR' || item.dept === 'RECEPTION') && bMl > 0;
+
+        if (type === 'SELF_BUY') { 
+            const enteredCost = parseFloat(document.getElementById('opSelfBuyCost').value); 
+            qty = rawQty;
+            sum = (!isNaN(enteredCost) && enteredCost >= 0) ? Math.round(enteredCost) : Math.round(rawQty * (parseFloat(item.guest) || 0)); 
+        } 
+        else if (type !== 'AUDIT' && isMlItem) {
+            qty = rawQty;
+            if (unitMode === 'PORTION_ML') {
+                sum = calcItemSaleRub(item, qty);
+            } else {
+                sum = Math.round(rawQty * (parseFloat(item.guest) || 0));
+            }
+        } 
+        else if (type !== 'AUDIT') { 
+            qty = rawQty;
+            sum = Math.round(qty * (parseFloat(item.guest) || 0)); 
+        }
+
+        const targetUser = users.find(u => String(u.id) === String(staffId)) || currentUser; 
+        let label = '', badgeClass = 'b-loss', logType = type;
+
+        if (item.dept === 'BAR' || item.dept === 'RECEPTION') {
+            const rec = getBarDayRecord(item.id, activeBarDate); 
+            const currentEnd = round2(round2(rec.start) + round2(rec.incoming) - round2(rec.out) - round2(rec.exp));
+            
+            if (type === 'AUDIT') {
+                let factVal = Math.max(0, rawQty);
+                if (factVal < currentEnd) { 
+                    qty = round2(currentEnd - factVal); 
+                    sum = calcItemSaleRub(item, qty); 
+                    rec.out = round2(rec.out + qty); 
+                    logType = 'OUT_STAFF'; 
+                    label = `🚨 Недостача на ${targetUser.name} (${formatStockDisplay(item, qty)})`; 
+                    badgeClass = 'b-warn'; 
+                } else if (factVal > currentEnd) { 
+                    qty = round2(factVal - currentEnd); 
+                    sum = 0; 
+                    rec.incoming = round2(rec.incoming + qty); 
+                    logType = 'IN'; 
+                    label = `➕ Излишек (+${formatStockDisplay(item, qty)})`; 
+                    badgeClass = 'b-in'; 
+                } else { 
+                    return showToast(`✅ Остаток сходится!`); 
+                }
+            } else if (type === 'SELF_BUY') { 
+                rec.incoming = round2(rec.incoming + qty); 
+                logType = 'SELF_BUY'; 
+                label = `🛒 Самозакуп (+${formatStockDisplay(item, qty)})`; 
+                badgeClass = 'b-in'; 
+            } else {
+                if (type !== 'IN' && currentEnd < qty) {
+                    return showToast(`❌ Недостаточно на остатке (доступно: ${formatStockDisplay(item, currentEnd)})!`);
+                }
+                
+                if (type === 'IN') { 
+                    rec.incoming = round2(rec.incoming + qty); 
+                    sum = 0; 
+                    label = `Приход`; 
+                    badgeClass = 'b-in'; 
+                    if (batchTo || batchFrom) rec.expDate = (batchFrom ? batchFrom + ' — ' : '') + batchTo;
+                } 
+                else if (type === 'BAR_SALE') { 
+                    rec.out = round2(rec.out + qty); 
+                    label = 'Продажа / Расход'; 
+                    badgeClass = 'b-sale'; 
+                } 
+                else if (type === 'EXPIRED') { 
+                    rec.exp = round2(rec.exp + qty); 
+                    label = `Списано (Просрочка/Брак)`; 
+                    badgeClass = 'b-warn'; 
+                    if (batchTo || batchFrom) rec.expDate = (batchFrom ? batchFrom + ' — ' : '') + batchTo;
+                } 
+                else if (type === 'OUT_STAFF') { 
+                    rec.out = round2(rec.out + qty); 
+                    rec.staffDebtOut = round2((rec.staffDebtOut || 0) + qty);
+                    label = `Недостача ➔ ${targetUser.name}`; 
+                    badgeClass = 'b-loss'; 
+                } 
+                else if (type === 'MOVE') {
+                    const srcLoc = fromLoc || item.loc; 
+                    sum = 0; 
+                    rec.out = round2(rec.out + qty);
+                    rec.transfersOut = round2((rec.transfersOut || 0) + qty);
+                    logType = 'MOVE_OUT';
+                    label = `🔄 Перемещение (${srcLoc} ➔ ${targetLoc}) [Списание]`; 
+                    badgeClass = 'b-move';
+                    showToast('✅ Успешно перемещено и списано с остатка!');
+                }
+            }
+        } else {
+            const dDate = dishesMeta.date || getTodayLocal(); const dRec = ensureDishesDayRecord(item.id, dDate);
+            qty = rawQty;
+            if (type === 'OUT_STAFF') { dRec.loss = round2(dRec.loss + qty); label = `Бой сотрудника ➔ ${targetUser.name}`; badgeClass = 'b-loss'; }
+            else if (type === 'OUT_GUEST') { dRec.loss = round2(dRec.loss + qty); label = `Бой гостя (В чек)`; badgeClass = 'b-sale'; }
+            else if (type === 'EXPIRED') { dRec.loss = round2(dRec.loss + qty); label = `Бой / Утрата (Износ)`; badgeClass = 'b-warn'; }
+            else if (type === 'IN') { dRec.incoming = round2(dRec.incoming + qty); label = `Приход посуды`; badgeClass = 'b-in'; }
+            else if (type === 'SELF_BUY') { dRec.incoming = round2(dRec.incoming + qty); label = `Докупка посуды`; badgeClass = 'b-in'; }
+            else { dRec.loss = round2(dRec.loss + qty); label = `Списание посуды`; badgeClass = 'b-loss'; }
+            item.qty = round2(round2(dRec.count) + round2(dRec.incoming) - round2(dRec.loss));
+        }
+
+        logs.push({ 
+            id: Date.now(), 
+            dept: item.dept || currentDept, 
+            barDate: activeBarDate, 
+            date: activeBarDate + ' ' + new Date().toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' }), 
+            author: targetUser.name, 
+            authorId: targetUser.id, 
+            createdById: currentUser.id,
+            itemId: item.id, 
+            itemName: item.name, 
+            formattedQty: formatStockDisplay(item, qty),
+            unit: item.unit || 'бут.', 
+            loc: item.loc, 
+            type: logType, 
+            label, 
+            badgeClass, 
+            qty, 
+            sum, 
+            comment,
+            targetLoc: targetLoc || ''
+        });
+        propagateForward(activeBarDate);
+        document.getElementById('opQty').value = 1; 
+        document.getElementById('opComment').value = ''; 
+        syncToCloud(true); 
+        renderAll(); 
+    }
+
+    async function undoOperation(logId) {
+        const log = logs.find(l => String(l.id) === String(logId)); 
+        if (!log) return;
+        const p = myPerms();
+        const isMyLog = currentUser && (String(log.authorId) === String(currentUser.id) || String(log.createdById) === String(currentUser.id) || log.author === currentUser.name);
+
+        if (!p.canUndoLogs && !(p.canUndoOwnLogs && isMyLog)) {
+            return showToast('❌ У вас нет прав для отмены этой операции!');
+        }
+
+        const item = items.find(i => String(i.id) === String(log.itemId));
+        if (item) {
+            if (item.dept === 'BAR' || item.dept === 'RECEPTION') {
+                const dKey = log.barDate || log.date.split(' ')[0]; 
+                const rec = getBarDayRecord(log.itemId, dKey);
+                
+                if (log.type === 'IN' || log.type === 'SELF_BUY') {
+                    rec.incoming = Math.max(0, round2(rec.incoming - log.qty));
+                } else if (log.type === 'EXPIRED' || log.type === 'EXPIRED_AUTO') {
+                    rec.exp = Math.max(0, round2(rec.exp - log.qty));
+                } else if (log.type === 'MOVE_OUT' || log.type === 'MOVE') {
+                    rec.out = Math.max(0, round2(rec.out - log.qty));
+                    if (rec.transfersOut > 0) rec.transfersOut = Math.max(0, round2(rec.transfersOut - log.qty));
+                } else {
+                    rec.out = Math.max(0, round2(rec.out - log.qty));
+                    if (log.type === 'OUT_STAFF' && rec.staffDebtOut > 0) {
+                        rec.staffDebtOut = Math.max(0, round2(rec.staffDebtOut - log.qty));
+                    }
+                }
+            } else {
+                const dDate = dishesMeta.date || getTodayLocal(); 
+                const dRec = ensureDishesDayRecord(log.itemId, dDate);
+                if (log.type === 'IN' || log.type === 'SELF_BUY') {
+                    dRec.incoming = Math.max(0, round2(dRec.incoming - log.qty));
+                } else {
+                    dRec.loss = Math.max(0, round2(dRec.loss - log.qty));
+                }
+                item.qty = round2(round2(dRec.count) + round2(dRec.incoming) - round2(dRec.loss));
+            }
+        }
+        logs = logs.filter(l => String(l.id) !== String(logId));
+        propagateForward(log ? (log.barDate || activeBarDate) : activeBarDate);
+        syncToCloud(true); 
+        renderAll(); 
+        playAudioTone(520, 0.1);
+        showToast(`↩ Отменено: операция полностью откачена!`);
+    }
+
+    async function deleteLogEntryOnly(logId) { if (!myPerms().canUndoLogs) return; logs = logs.filter(l => String(l.id) !== String(logId)); syncToCloud(true); renderAll(); showToast('🗑 Запись удалена!'); }
+
+    function updateSummaryCardsAndExpiredList() {
+        const isBar = currentDept === 'BAR' || currentDept === 'RECEPTION'; 
+        const deptItems = items.filter(i => (i.dept || 'DISHES') === currentDept);
+        if (isBar) {
+            let expiredSum = 0; const expRowsHtml = [];
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            deptItems.forEach(item => {
+                const rec = getBarDayRecord(item.id, activeBarDate); 
+                if (rec.exp > 0) { 
+                    const s = calcItemSaleRub(item, rec.exp); 
+                    expiredSum += s; 
+                    expRowsHtml.push(`• <b>${item.name}</b>: списано <b>${formatStockDisplay(item, rec.exp)}</b> (${s} ₽) ${rec.expDate ? '[' + rec.expDate + ']' : ''}`); 
+                }
+
+                if (rec.expDate && rec.expDate.length >= 10) {
+                    const parts = rec.expDate.split('—');
+                    const endDateStr = parts[parts.length - 1].trim();
+                    const expObj = new Date(endDateStr);
+                    if (!isNaN(expObj.getTime())) {
+                        expObj.setHours(0,0,0,0);
+                        const diffDays = Math.round((expObj - today) / (1000 * 60 * 60 * 24));
+                        if (diffDays <= 5 && diffDays >= 0) {
+                            expRowsHtml.push(`⏳ <b style="color:var(--accent);">${item.name}</b>: истекает через ${diffDays} дн. (до ${endDateStr}) — Остаток: ${formatStockDisplay(item, round2(rec.start + rec.incoming - rec.out - rec.exp))}`);
+                        }
+                    }
+                }
+            });
+            const ym = activeBarDate.slice(0, 7); 
+            
+            const rawDay = calcRawDayRevenue(activeBarDate, currentDept);
+            const rawMonth = calcRawMonthRevenue(ym, currentDept);
+            const offDay = revenueOffsets['DAY_' + currentDept + '_' + activeBarDate] || 0;
+            const offMonth = revenueOffsets['MONTH_' + currentDept + '_' + ym] || 0;
+            const netDaySales = Math.max(0, rawDay - offDay); 
+            const netMonthSales = Math.max(0, rawMonth - offMonth);
+
+            const deptTitleName = currentDept === 'BAR' ? 'бара' : 'ресепшена';
+            document.getElementById('lblStat1').innerText = `Позиций в ревизии`; 
+            document.getElementById('stTotalItems').innerText = `${deptItems.length} наим.`; 
+            document.getElementById('lblStat2').innerText = `Продажи ${deptTitleName} за день`; 
+            document.getElementById('stDaySales').innerText = `${netDaySales.toLocaleString('ru-RU')} ₽`; 
+            document.getElementById('lblStat3').innerText = `Продажи ${deptTitleName} за месяц`; 
+            document.getElementById('stMonthSales').innerText = `${netMonthSales.toLocaleString('ru-RU')} ₽`; 
+            document.getElementById('lblStat4').innerText = `Списано просрочки`; 
+            document.getElementById('stStaffLoss').innerText = `${expiredSum.toLocaleString('ru-RU')} ₽`;
+            document.getElementById('lblExpDate').innerText = activeBarDate; 
+            document.getElementById('expiredDayList').innerHTML = expRowsHtml.length ? expRowsHtml.join('<br>') : `<span style="color:var(--success); font-weight:700;">✅ Просрочек и предупреждений нет.</span>`;
+            
+            const btnRst = document.getElementById('btnResetMonthRev');
+            if (btnRst) btnRst.innerText = `💸 Обнулить выручку ${deptTitleName}`;
+        } else {
+            let totalQty = 0, staffLoss = 0, guestPaid = 0; const dDate = dishesMeta.date || getTodayLocal();
+            deptItems.forEach(i => { const dRec = ensureDishesDayRecord(i.id, dDate); const finalQ = round2(round2(dRec.count) + round2(dRec.incoming) - round2(dRec.loss)); totalQty = round2(totalQty + finalQ); staffLoss += round2(dRec.loss * (parseFloat(i.guest) || 0)); });
+            logs.filter(l => (l.dept || 'DISHES') === 'DISHES').forEach(l => { if (l.type === 'OUT_GUEST') guestPaid += (parseInt(l.sum) || 0); });
+            document.getElementById('lblStat1').innerText = 'Всего посуды'; document.getElementById('stTotalItems').innerText = `${totalQty} шт.`; document.getElementById('lblStat2').innerText = 'Оплачено гостями'; document.getElementById('stDaySales').innerText = `${guestPaid.toLocaleString('ru-RU')} ₽`; document.getElementById('lblStat3').innerText = 'Сумма боя'; document.getElementById('stMonthSales').innerText = `${staffLoss.toLocaleString('ru-RU')} ₽`; document.getElementById('lblStat4').innerText = 'Заявки'; document.getElementById('stStaffLoss').innerText = `${barOrders.filter(o=>o.status==='В обработке').length} актив.`;
+        }
+    }
+
+    function renderStock() {
+        const q = (document.getElementById('searchBox').value || '').toLowerCase(); 
+        const loc = document.getElementById('filterLoc').value; 
+        const cat = document.getElementById('filterCat').value; 
+        const p = myPerms(); 
+        const tbody = document.getElementById('stockBody'); 
+        if (!tbody) return;
+        const deptItems = items.filter(i => (i.dept || 'DISHES') === currentDept); 
+        const isBarOrRec = currentDept === 'BAR' || currentDept === 'RECEPTION'; 
+        const dDate = dishesMeta.date || getTodayLocal();
+        
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        const filtered = deptItems.filter(i => {
+            if (loc !== 'ALL' && i.loc !== loc) return false; 
+            if (cat !== 'ALL' && i.cat !== cat) return false; 
+            if (!i.name.toLowerCase().includes(q)) return false;
+
+            let endQty = 0;
+            let hasExpOrLoss = false;
+            if (isBarOrRec) {
+                const rec = getBarDayRecord(i.id, activeBarDate);
+                endQty = round2(round2(rec.start) + round2(rec.incoming) - round2(rec.out) - round2(rec.exp));
+                hasExpOrLoss = (round2(rec.exp) > 0 || Boolean(rec.expDate && rec.expDate.trim()));
+            } else {
+                const dRec = ensureDishesDayRecord(i.id, dDate);
+                endQty = round2(round2(dRec.count) + round2(dRec.incoming) - round2(dRec.loss));
+                hasExpOrLoss = round2(dRec.loss) > 0;
+            }
+
+            if (showZeroOnly && endQty <= 0) return false;
+            if (showExpiringOnly && !hasExpOrLoss) return false;
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:24px; color:var(--text-muted); font-weight:700;">По выбранным фильтрам позиций не найдено</td></tr>`;
+            return;
+        }
+
+        if (isBarOrRec) {
+            let lastCat = '', html = '';
+            filtered.forEach(item => {
+                if (item.cat !== lastCat) { lastCat = item.cat; html += `<tr class="cat-row"><td colspan="9">📁 ${lastCat}</td></tr>`; }
+                const rec = getBarDayRecord(item.id, activeBarDate); 
+                const start = round2(rec.start); 
+                const incoming = round2(rec.incoming); 
+                const out = round2(rec.out); 
+                const exp = round2(rec.exp); 
+                const endQty = round2(start + incoming - out - exp);
+                const price = parseFloat(item.guest) || 0; 
+                
+                const actualSales = getActualItemSales(item, rec);
+                const rowSale = calcItemSaleRub(item, actualSales); 
+
+                const canInline = p.canDoOps || p.canEditItems; 
+                const canEditStart = p.canEditItems;
+                
+                const stopBadge = endQty <= 0 ? `<br><span class="badge b-warn" style="margin-top:3px;">🛑 СТОП</span>` : '';
+                
+                let expDateBadge = '';
+                if (rec.expDate) {
+                    const parts = rec.expDate.split('—');
+                    const endDateStr = parts[parts.length - 1].trim();
+                    const expObj = new Date(endDateStr);
+                    if (!isNaN(expObj.getTime())) {
+                        expObj.setHours(0,0,0,0);
+                        const diffDays = Math.round((expObj - today) / (1000 * 60 * 60 * 24));
+                        if (diffDays <= 5 && diffDays >= 0) {
+                            expDateBadge = `<br><span class="badge b-warn" style="margin-top:2px; font-size:10px;">⏳ Срок через ${diffDays} дн. (${rec.expDate})</span>`;
+                        } else if (diffDays < 0) {
+                            expDateBadge = `<br><span class="badge b-warn" style="margin-top:2px; font-size:10px; background:#ef4444; color:#fff;">⚠️ ПРОСРОЧЕНО (${rec.expDate})</span>`;
+                        } else {
+                            expDateBadge = `<br><small style="color:var(--text-muted);">🗓 Годно до: ${rec.expDate}</small>`;
+                        }
+                    } else {
+                        expDateBadge = `<br><small style="color:var(--danger); font-weight:700;">⏳ ${rec.expDate}</small>`;
+                    }
+                }
+
+                const actionsHtml = p.canEditItems ? `<button type="button" class="btn-sm btn-edit" onclick="openItemModal('${item.id}')">✏️</button><button type="button" class="btn-sm btn-del" onclick="removeItem('${item.id}')">🗑</button>` : `—`;
+
+                html += `<tr>
+                    <td><strong>${item.name}</strong><br><small style="color:var(--text-muted)">${item.note || ''} • ${item.loc}</small>${expDateBadge}</td>
+                    <td><b>${item.vol || ''}</b><br><strong style="color:var(--blue)">${price} ₽</strong></td>
+                    <td>${canEditStart ? `<input type="number" step="0.01" class="cell-input" value="${start}" onchange="onInlineBarCellChange('${item.id}','start',this.value)">` : `<b>${start}</b>`}</td>
+                    <td>${canInline ? `<input type="number" step="0.01" class="cell-input" style="color:var(--success)" value="${incoming}" onchange="onInlineBarCellChange('${item.id}','incoming',this.value)">` : `<b style="color:var(--success)">+${incoming}</b>`}</td>
+                    <td>${canInline ? `<input type="number" step="0.01" class="cell-input" style="color:#9333ea" value="${out}" onchange="onInlineBarCellChange('${item.id}','out',this.value)">` : `<b style="color:#9333ea">-${out}</b>`}</td>
+                    <td>${canInline ? `<input type="number" step="0.01" class="cell-input" style="color:var(--danger); border-color:var(--danger);" value="${exp}" onchange="onInlineBarCellChange('${item.id}','exp',this.value)">` : `<b style="color:var(--danger)">${exp}</b>`}</td>
+                    <td><strong style="font-size:13.5px; color:${endQty <= 0 ? 'var(--danger)' : 'var(--text)'};">${formatStockDisplay(item, endQty)}</strong>${stopBadge}</td>
+                    <td><strong style="color:var(--success);">${rowSale.toLocaleString('ru-RU')} ₽</strong></td>
+                    <td>${actionsHtml}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        } else {
+            tbody.innerHTML = filtered.map(item => {
+                const dRec = ensureDishesDayRecord(item.id, dDate); const count = round2(dRec.count); const incoming = round2(dRec.incoming); const loss = round2(dRec.loss); const finalQty = round2(count + incoming - loss);
+                const price = parseFloat(item.guest) || 0; const totalLossSum = Math.round(loss * price); const canInline = p.canDoOps || p.canEditItems; const u = item.unit || 'шт.';
+                const actionsHtml = p.canEditItems ? `<button type="button" class="btn-sm btn-edit" onclick="openItemModal('${item.id}')">✏️</button><button type="button" class="btn-sm btn-del" onclick="removeItem('${item.id}')">🗑</button>` : `—`;
+
+                return `<tr><td><strong>${item.name}</strong><br><small style="color:var(--text-muted)">${item.note || ''}</small></td><td><span class="badge b-move">${item.cat}</span><br><small style="color:var(--text-muted)">${item.loc}</small></td><td>${p.canEditItems ? `<input type="number" step="1" class="cell-input" value="${count}" onchange="onInlineDishesCellChange('${item.id}','count',this.value)">` : `<b title="Начальный остаток защищен от изменений">🔒 ${count}</b>`}</td><td>${canInline ? `<input type="number" step="1" class="cell-input" style="color:var(--success)" value="${incoming}" onchange="onInlineDishesCellChange('${item.id}','incoming',this.value)">` : `<b style="color:var(--success)">+${incoming}</b>`}</td><td>${canInline ? `<input type="number" step="1" class="cell-input" style="color:var(--danger); border-color:var(--danger);" value="${loss}" onchange="onInlineDishesCellChange('${item.id}','loss',this.value)"><select class="exp-note-input" onchange="onInlineDishesCellChange('${item.id}','lossReason',this.value)"><option value="Износ/Скол" ${dRec.lossReason==='Износ/Скол'?'selected':''}>Бой / Утрата / Износ</option><option value="Бой персонала" ${dRec.lossReason==='Бой персонала'?'selected':''}>Бой официанта / сотрудника</option><option value="Бой гостя" ${dRec.lossReason==='Бой гостя'?'selected':''}>Бой гостя (в чек)</option></select>` : `<b style="color:var(--danger)">-${loss}</b><br><small>${dRec.lossReason || ''}</small>`}</td><td><strong style="font-size:14px; color:${finalQty <= 0 ? 'var(--danger)' : 'var(--text)'};">${finalQty} ${u}</strong></td><td><strong style="color:var(--danger);">${totalLossSum.toLocaleString('ru-RU')} ₽</strong><br><small style="color:var(--text-muted)">${price} ₽/шт</small></td><td>${actionsHtml}</td></tr>`;
+            }).join('');
+        }
+    }
+
+    function renderChat() {
+        const box = document.getElementById('chatMessages'); if(!box) return;
+        box.innerHTML = chatLog.map(m => { const isMe = currentUser && String(m.uid) === String(currentUser.id); return `<div style="display:flex; flex-direction:column; align-items:${isMe?'flex-end':'flex-start'};"><span style="font-size:10px; color:var(--text-muted); margin-bottom:2px;">${m.author} • ${m.time}</span><div style="max-width:85%; padding:10px 14px; border-radius:14px; background:${isMe?'var(--primary)':'var(--surface)'}; color:${isMe?'#fff':'var(--text)'}; font-size:13px; word-break:break-word; box-shadow:0 2px 5px rgba(0,0,0,0.08);">${m.text}</div></div>`; }).join('');
+    }
+
+    async function sendChatMessage() {
+        const inp = document.getElementById('chatInput'); const text = inp.value.trim(); if(!text || !currentUser) return;
+        chatLog.push({ id: Date.now(), uid: currentUser.id, author: currentUser.name, time: new Date().toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'}), text });
+        if(chatLog.length > 50) chatLog.shift(); inp.value = ''; renderChat(); syncToCloud(true);
+        setTimeout(() => { const box = document.getElementById('chatMessages'); if(box) box.scrollTop = box.scrollHeight; }, 50);
+    }
+
+    function renderAll() {
+        if (!currentUser) return;
+        const p = myPerms();
+        renderStock(); updateSummaryCardsAndExpiredList(); renderChat();
+        filterOpItemsDropdown();
+
+        const opStaffSel = document.getElementById('opStaffSelect');
+        if (opStaffSel) { opStaffSel.innerHTML = users.map(u => `<option value="${u.id}" ${String(u.id) === String(currentUser.id) ? 'selected' : ''}>${u.name} (${getRoleObj(u.role).name})</option>`).join(''); }
+
+        const ordersTbody = document.getElementById('ordersBody');
+        if (ordersTbody) {
+            ordersTbody.innerHTML = barOrders.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:16px;">Заявок нет</td></tr>` :
+                barOrders.slice().reverse().map(o => `<tr><td><strong>${o.author}</strong><br><small>${o.date}</small></td><td><strong>${o.itemName}</strong><br><span class="badge b-in">${o.qty} ${o.unit}</span></td><td>${o.comment || '—'}</td><td><span class="badge ${o.status==='Утверждено'?'b-ok':o.status==='Отклонено'?'b-warn':'b-move'}">${o.status}</span></td><td>${p.canEditItems || p.canDoOps ? `<button type="button" class="btn-sm btn-add" onclick="updateOrderStatus('${o.id}','Утверждено')">✅</button><button type="button" class="btn-sm btn-del" onclick="updateOrderStatus('${o.id}','Отклонено')">❌</button>` : ''}<button type="button" class="btn-sm btn-del" onclick="removeBarOrder('${o.id}')">🗑</button></td></tr>`).join('');
+        }
+
+        document.getElementById('rolesBody').innerHTML = roles.map(r => `<tr><td><span class="role-badge" style="background:${r.color}">${r.name}</span></td><td><small>${[r.canEditItems?'Позиции':'', r.canDoOps?'Операции':'', r.canUndoOwnLogs?'Отмена своих ошибок':'', r.canUndoLogs?'Полный журнал':'', r.canManageStaff?'Персонал':'', r.canViewFinances?'Финансы':''].filter(Boolean).join(' • ')}</small></td><td><button type="button" class="btn-sm btn-edit" onclick="openRoleModal('${r.code}')">✏️</button><button type="button" class="btn-sm btn-del" onclick="removeRole('${r.code}')">🗑</button></td></tr>`).join('');
+
+        document.getElementById('usersBody').innerHTML = users.map(u => {
+            const rObj = getRoleObj(u.role);
+            const dishDebt = logs.filter(l => (l.dept || 'DISHES') === 'DISHES' && String(l.authorId) === String(u.id) && l.type === 'OUT_STAFF').reduce((a, c) => a + (parseInt(c.sum) || 0), 0);
+            const barDebt = logs.filter(l => (l.dept === 'BAR' || l.dept === 'RECEPTION') && String(l.authorId) === String(u.id) && l.type === 'OUT_STAFF').reduce((a, c) => a + (parseInt(c.sum) || 0), 0);
+            return `<tr>
+                <td><strong>${u.name}</strong><br><small style="color:var(--text-muted)">${u.phone || ''}</small></td>
+                <td><span class="role-badge" style="background:${rObj.color}">${rObj.name}</span><br><small>${u.hall}</small></td>
+                <td><code style="font-size:13px; font-weight:800; color:var(--primary);">${p.canManageStaff ? u.pin : '••••'}</code></td>
+                <td style="font-weight:700; color:${dishDebt > 0 ? 'var(--danger)' : 'var(--success)'}">${dishDebt} ₽</td>
+                <td style="font-weight:700; color:${barDebt > 0 ? 'var(--danger)' : 'var(--success)'}">${barDebt} ₽</td>
+                <td>${p.canManageStaff ? `<button type="button" class="btn-sm btn-edit" onclick="openUserModal('${u.id}')">✏️</button><button type="button" class="btn-sm btn-del" onclick="removeUser('${u.id}')">🗑</button>` : '—'}</td>
+            </tr>`;
+        }).join('');
+
+        const logsTbody = document.getElementById('logsBody');
+        const logsHdr = document.getElementById('logsPanelHeaderTitle');
+        if (logsTbody) {
+            let visibleLogs = logs.slice().reverse();
+            visibleLogs = visibleLogs.filter(l => l.dept === currentDept);
+
+            if (currentDept === 'RECEPTION') {
+                if (logsHdr) logsHdr.innerText = '📋 Журнал операций (Ресепшен)';
+            } else if (currentDept === 'BAR') {
+                if (logsHdr) logsHdr.innerText = '📋 Журнал операций (Бар)';
+            } else {
+                if (logsHdr) logsHdr.innerText = '📋 Журнал операций (Посуда)';
+            }
+
+            logsTbody.innerHTML = visibleLogs.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:16px;">Записей в журнале нет</td></tr>` :
+                visibleLogs.map(l => {
+                    const isMyLog = currentUser && (String(l.authorId) === String(currentUser.id) || String(l.createdById) === String(currentUser.id) || l.author === currentUser.name);
+                    const canUndoThis = p.canUndoLogs || (p.canUndoOwnLogs && isMyLog);
+                    return `<tr>
+                        <td><strong>${l.author}</strong><br><small>${l.date}</small></td>
+                        <td><strong>${l.itemName}</strong><br><small>${l.loc} ${l.comment ? '• ' + l.comment : ''}</small></td>
+                        <td><span class="badge ${l.badgeClass}">${l.label}</span></td>
+                        <td><strong>${l.formattedQty || (l.qty + ' ' + (l.unit || 'бут.'))}</strong><br><small>${l.sum > 0 ? l.sum + ' ₽' : '—'}</small></td>
+                        <td>
+                            ${canUndoThis ? `<button type="button" class="btn-sm btn-edit" onclick="undoOperation('${l.id}')">↩ Отмена</button>` : '—'}
+                            ${p.canUndoLogs ? `<button type="button" class="btn-sm btn-del" onclick="deleteLogEntryOnly('${l.id}')">🗑</button>` : ''}
+                        </td>
+                    </tr>`;
+                }).join('');
+        }
+    }
+
+    function saveCloudUrl() {
+        const val = document.getElementById('cloudUrlInput').value.trim();
+        if (!val.startsWith('https://')) return showToast('Неверная ссылка');
+        cloudBaseUrl = val; safeSet('ld12_cloud_url', cloudBaseUrl); syncFromCloud(true);
+    }
+
+    function exportCSV() {
+        let csv = "\uFEFFДата;Отдел;Наименование;Объем;Цена;Начало;Приход;Расход;Конец\n";
+        items.forEach(item => {
+            const rec = getBarDayRecord(item.id, activeBarDate);
+            csv += `"${activeBarDate}";"${item.dept}";"${item.name}";"${item.vol || ''}";"${item.guest || 0}";"${rec.start}";"${rec.incoming}";"${rec.out}";"${round2(rec.start + rec.incoming - rec.out - rec.exp)}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Учет_${activeBarDate}.csv`; a.click();
+    }
+
+    function printCurrentDepartmentTable() {
+        const pStart = activeBarDate;
+        let deptTitle = currentDept === 'BAR' ? "БАР «ГЛОБУС»" : currentDept === 'RECEPTION' ? "РЕЦЕПШЕН" : "ПОСУДА И ИНВЕНТАРЬ";
+        let rowsHtml = '';
+        const deptItems = items.filter(i => (i.dept || 'DISHES') === currentDept);
+
+        if (currentDept === 'DISHES') {
+            const dDate = dishesMeta.date || getTodayLocal();
+            deptItems.forEach(item => {
+                const dRec = ensureDishesDayRecord(item.id, dDate);
+                const finalQ = round2(round2(dRec.count) + round2(dRec.incoming) - round2(dRec.loss));
+                rowsHtml += `<tr><td>${item.name}</td><td>${item.cat}</td><td style="text-align:center;">${dRec.count}</td><td style="text-align:center;">${dRec.incoming}</td><td style="text-align:center;">${dRec.loss}</td><td style="text-align:center;"><b>${finalQ}</b></td></tr>`;
+            });
+        } else {
+            deptItems.forEach(item => {
+                const rec = getBarDayRecord(item.id, activeBarDate);
+                const end = round2(round2(rec.start) + round2(rec.incoming) - round2(rec.out) - round2(rec.exp));
+                rowsHtml += `<tr><td>${item.name}</td><td>${item.vol || ''}</td><td style="text-align:center;">${rec.start}</td><td style="text-align:center;">${rec.incoming}</td><td style="text-align:center;">${rec.out}</td><td style="text-align:center;"><b>${formatStockDisplay(item, end)}</b></td></tr>`;
+            });
+        }
+
+        const win = window.open('', '_blank');
+        win.document.write(`<html><head><meta charset="utf-8"><title>Печать ведомости за ${pStart}</title><style>body{font-family:'Times New Roman',serif;padding:20px;font-size:12pt;}table{width:100%;border-collapse:collapse;margin-top:15px;}th,td{border:1px solid #000;padding:6px;font-size:11pt;}th{background:#f0f0f0;}</style></head><body><h2 style="text-align:center;">ОФИЦИАЛЬНАЯ ВЕДОМОСТЬ УЧЕТА — ${deptTitle}</h2><p style="text-align:center;">Дата ревизии: <b>${pStart}</b></p><table><thead><tr><th>Наименование</th><th>${currentDept==='DISHES'?'Категория':'Объем'}</th><th>Начало</th><th>Приход</th><th>Расход / Бой</th><th>Остаток</th></tr></thead><tbody>${rowsHtml}</tbody></table><br><br><p>Директор: _________________ (____________________)</p><p>Ответственный смены: _________________ (____________________)</p><script>window.print();<\/script></body></html>`);
+        win.document.close();
+    }
+
+    function downloadWordManual() {
+        const docHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset="utf-8"><title>Инструкция — Лесные Дали & Глобус</title></head><body style="font-family:'Times New Roman',serif; font-size:12pt; line-height:1.5; padding:20px;">
+        <h1 style="text-align:center; color:#1b4332;">ИНСТРУКЦИЯ ПОЛЬЗОВАТЕЛЯ И РУКОВОДСТВО</h1>
+        <h3 style="text-align:center; color:#64748b;">Система учета «Лесные Дали & Глобус» (PRO)</h3>
+        <hr/>
+        <h2>1. Общие положения</h2>
+        <p>Система предназначена для автоматизированного учета остатков в бутылках и порциях, движения товара, продаж, контроля посуды и инвентаря в подразделениях ООО «Парк-отель «Лесные дали».</p>
+        <br/><br/>
+        <table width="100%" style="margin-top:40px;">
+            <tr><td><b>Директор:</b> _______________</td><td><b>Администратор:</b> _______________</td></tr>
+        </table>
+        </body></html>`;
+        
+        const blob = new Blob(['\ufeff', docHtml], { type: 'application/msword;charset=utf-8' });
+        const link = document.createElement('a'); 
+        link.href = URL.createObjectURL(blob); 
+        link.download = `Инструкция_Лесные_Дали_PRO.doc`; 
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && currentUser) {
+            syncFromCloud(false);
+        }
+    });
+    window.addEventListener('focus', () => {
+        if (currentUser) {
+            syncFromCloud(false);
+        }
+    });
+
+    applyAppearanceSettings();
+    populateDepartmentFilters();
+    populateLoginDropdowns();
+    updateAuthUI();
+    updateCloudStorageMeter();
+    applySettingsEffects();
+    syncFromCloud(true);
+</script>
+</body>
+</html>
